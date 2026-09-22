@@ -1,4 +1,10 @@
 /* ==========================================================
+   MERGEFLOW
+   Modern PDF & Image Merger
+========================================================== */
+
+
+/* ==========================================================
    RESET
 ========================================================== */
 
@@ -16,7 +22,14 @@ body {
 
     margin: 0;
 
-    background: #f5f6f8;
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(0, 0, 0, 0.025),
+            transparent 30%
+        ),
+
+        #f5f6f8;
 
     color: #17191c;
 
@@ -34,10 +47,14 @@ body {
 
     height: 76px;
 
-    background: #ffffff;
+    background:
+        rgba(255, 255, 255, 0.94);
+
+    backdrop-filter:
+        blur(15px);
 
     border-bottom:
-        1px solid #e6e8eb;
+        1px solid #e5e7ea;
 
     display: flex;
 
@@ -68,13 +85,18 @@ body {
 
 .brand-logo {
 
-    width: 40px;
+    width: 42px;
 
-    height: 40px;
+    height: 42px;
 
-    border-radius: 11px;
+    border-radius: 12px;
 
-    background: #17191c;
+    background:
+        linear-gradient(
+            145deg,
+            #111315,
+            #353940
+        );
 
     color: #ffffff;
 
@@ -85,6 +107,10 @@ body {
     justify-content: center;
 
     font-size: 20px;
+
+    box-shadow:
+        0 5px 15px
+        rgba(0, 0, 0, 0.12);
 }
 
 
@@ -98,7 +124,7 @@ body {
 
     font-size: 19px;
 
-    line-height: 1.2;
+    font-weight: 700;
 }
 
 
@@ -106,11 +132,11 @@ body {
 
     display: block;
 
-    margin-top: 2px;
-
-    color: #8a8f98;
+    color: #8b9199;
 
     font-size: 11px;
+
+    margin-top: 2px;
 }
 
 
@@ -122,9 +148,19 @@ body {
 
     gap: 8px;
 
-    color: #737982;
+    color: #727982;
 
     font-size: 13px;
+
+    padding:
+        8px 12px;
+
+    border:
+        1px solid #e5e7ea;
+
+    border-radius: 30px;
+
+    background: #ffffff;
 }
 
 
@@ -137,6 +173,10 @@ body {
     border-radius: 50%;
 
     background: #22a06b;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(34, 160, 107, 0.10);
 }
 
 
@@ -159,17 +199,17 @@ body {
 
 .sidebar {
 
-    width: 235px;
+    width: 245px;
 
-    min-width: 235px;
+    min-width: 245px;
 
     background: #ffffff;
 
     border-right:
-        1px solid #e6e8eb;
+        1px solid #e5e7ea;
 
     padding:
-        28px 16px;
+        30px 16px;
 
     display: flex;
 
@@ -177,18 +217,18 @@ body {
 }
 
 
-.sidebar-section-title {
+.sidebar-title {
 
     margin:
-        0 12px 12px;
+        0 12px 13px;
 
-    color: #9aa0a8;
+    color: #a0a5ac;
 
     font-size: 10px;
 
     font-weight: 700;
 
-    letter-spacing: 1.4px;
+    letter-spacing: 1.5px;
 }
 
 
@@ -196,18 +236,18 @@ body {
 
     width: 100%;
 
-    border: 0;
+    border: 1px solid transparent;
 
     background: transparent;
 
-    border-radius: 10px;
+    border-radius: 11px;
 
     padding:
         12px 13px;
 
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 
-    color: #666c75;
+    color: #656b73;
 
     display: flex;
 
@@ -215,21 +255,27 @@ body {
 
     gap: 11px;
 
-    font-size: 14px;
+    font-size: 13px;
 
     text-align: left;
 
     cursor: pointer;
 
-    transition: 0.2s;
+    transition:
+        background 0.2s,
+        color 0.2s,
+        transform 0.2s;
 }
 
 
 .sidebar-item:hover {
 
-    background: #f3f4f6;
+    background: #f5f6f8;
 
     color: #17191c;
+
+    transform:
+        translateX(2px);
 }
 
 
@@ -238,14 +284,26 @@ body {
     background: #17191c;
 
     color: #ffffff;
+
+    box-shadow:
+        0 5px 15px
+        rgba(0, 0, 0, 0.10);
 }
 
 
 .sidebar-icon {
 
-    width: 18px;
+    width: 21px;
 
-    text-align: center;
+    height: 21px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 15px;
 }
 
 
@@ -257,14 +315,19 @@ body {
 
 .privacy-card {
 
-    padding: 13px;
+    padding: 14px;
 
-    background: #f6f7f8;
+    background:
+        linear-gradient(
+            145deg,
+            #f8f9fa,
+            #f2f3f5
+        );
 
     border:
-        1px solid #e9eaed;
+        1px solid #e7e9ec;
 
-    border-radius: 12px;
+    border-radius: 13px;
 
     display: flex;
 
@@ -274,7 +337,7 @@ body {
 
 .privacy-icon {
 
-    font-size: 18px;
+    font-size: 17px;
 }
 
 
@@ -287,18 +350,18 @@ body {
 .privacy-card p {
 
     margin:
-        3px 0 0;
+        4px 0 0;
 
-    color: #858a92;
+    color: #858b93;
 
     font-size: 10px;
 
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 
 /* ==========================================================
-   MAIN CONTENT
+   MAIN
 ========================================================== */
 
 .main-content {
@@ -311,7 +374,7 @@ body {
         0 auto;
 
     padding:
-        55px 45px;
+        52px 45px;
 }
 
 
@@ -321,22 +384,62 @@ body {
 
 .hero {
 
-    margin-bottom: 32px;
+    margin-bottom: 30px;
+}
+
+
+.hero-badge {
+
+    width: fit-content;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding:
+        6px 10px;
+
+    border:
+        1px solid #e2e4e7;
+
+    background: #ffffff;
+
+    border-radius: 30px;
+
+    color: #777d85;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    margin-bottom: 18px;
+}
+
+
+.hero-badge span {
+
+    color: #17191c;
+
+    font-size: 11px;
 }
 
 
 .eyebrow {
 
     margin:
-        0 0 10px;
+        0 0 9px;
 
-    color: #888e97;
+    color: #858b93;
 
     font-size: 10px;
 
     font-weight: 700;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 1.6px;
 }
 
 
@@ -348,11 +451,11 @@ body {
         "Space Grotesk",
         sans-serif;
 
-    font-size: 48px;
+    font-size: 50px;
 
-    line-height: 1.05;
+    line-height: 1.03;
 
-    letter-spacing: -2px;
+    letter-spacing: -2.3px;
 }
 
 
@@ -364,15 +467,16 @@ body {
 
 .hero-description {
 
-    max-width: 580px;
+    max-width: 600px;
 
-    margin-top: 18px;
+    margin:
+        17px 0 0;
 
-    color: #727780;
+    color: #747a83;
 
-    font-size: 15px;
+    font-size: 14px;
 
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 
@@ -387,24 +491,24 @@ body {
     background: #ffffff;
 
     border:
-        1px solid #e2e5e8;
+        1px solid #e1e4e7;
 
-    border-radius: 18px;
+    border-radius: 19px;
 
     box-shadow:
-        0 8px 30px
-        rgba(20, 25, 30, 0.04);
+        0 12px 35px
+        rgba(20, 25, 30, 0.045);
 }
 
 
 .upload-area {
 
-    min-height: 210px;
+    min-height: 215px;
 
     border:
-        1.5px dashed #cfd3d8;
+        1.5px dashed #cbd0d6;
 
-    border-radius: 13px;
+    border-radius: 14px;
 
     display: flex;
 
@@ -416,7 +520,10 @@ body {
 
     cursor: pointer;
 
-    transition: 0.2s;
+    transition:
+        background 0.2s,
+        border 0.2s,
+        transform 0.2s;
 }
 
 
@@ -426,22 +533,30 @@ body {
     border-color: #17191c;
 
     background: #fafafa;
+
+    transform:
+        scale(0.995);
 }
 
 
 .upload-icon {
 
-    width: 48px;
+    width: 50px;
 
-    height: 48px;
+    height: 50px;
 
     margin-bottom: 13px;
 
-    background: #17191c;
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #141619,
+            #34383e
+        );
 
     color: #ffffff;
-
-    border-radius: 13px;
 
     display: flex;
 
@@ -450,6 +565,10 @@ body {
     justify-content: center;
 
     font-size: 22px;
+
+    box-shadow:
+        0 8px 20px
+        rgba(0, 0, 0, 0.12);
 }
 
 
@@ -485,12 +604,12 @@ body {
 
 
 /* ==========================================================
-   TOOLBAR
+   FILE TOOLBAR
 ========================================================== */
 
 .file-toolbar {
 
-    margin-top: 28px;
+    margin-top: 27px;
 
     display: flex;
 
@@ -518,16 +637,20 @@ body {
 
 .file-count {
 
-    min-width: 24px;
+    min-width: 25px;
 
     padding:
-        3px 7px;
+        3px 8px;
 
     background: #e9eaed;
 
     border-radius: 20px;
 
-    font-size: 11px;
+    color: #626870;
+
+    font-size: 10px;
+
+    font-weight: 700;
 
     text-align: center;
 }
@@ -537,7 +660,7 @@ body {
 
     display: flex;
 
-    gap: 8px;
+    gap: 7px;
 }
 
 
@@ -555,7 +678,7 @@ body {
 
     border-radius: 8px;
 
-    font-size: 12px;
+    font-size: 11px;
 
     cursor: pointer;
 
@@ -565,15 +688,15 @@ body {
 
 .tool-button:hover:not(:disabled) {
 
-    background: #f2f3f5;
+    background: #f1f2f4;
 
-    border-color: #cdd1d6;
+    border-color: #c9cdd2;
 }
 
 
 .tool-button:disabled {
 
-    opacity: 0.45;
+    opacity: 0.42;
 
     cursor: not-allowed;
 }
@@ -603,7 +726,7 @@ body {
 
 .file-row {
 
-    min-height: 61px;
+    min-height: 63px;
 
     padding:
         11px 14px;
@@ -611,9 +734,9 @@ body {
     background: #ffffff;
 
     border:
-        1px solid #e3e5e8;
+        1px solid #e2e4e7;
 
-    border-radius: 11px;
+    border-radius: 12px;
 
     display: flex;
 
@@ -623,15 +746,23 @@ body {
 
     cursor: pointer;
 
-    transition: 0.15s;
+    transition:
+        transform 0.15s,
+        border 0.15s,
+        box-shadow 0.15s;
 }
 
 
 .file-row:hover {
 
-    border-color: #bfc4ca;
+    border-color: #bdc2c8;
 
-    transform: translateY(-1px);
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 15px
+        rgba(20, 25, 30, 0.04);
 }
 
 
@@ -640,7 +771,9 @@ body {
     border-color: #17191c;
 
     box-shadow:
-        0 0 0 1px #17191c;
+        0 0 0 1px #17191c,
+        0 7px 18px
+        rgba(0, 0, 0, 0.05);
 }
 
 
@@ -650,7 +783,7 @@ body {
 
     color: #a0a5ac;
 
-    font-size: 12px;
+    font-size: 11px;
 
     text-align: center;
 }
@@ -658,13 +791,13 @@ body {
 
 .file-icon {
 
-    width: 37px;
+    width: 38px;
 
-    height: 37px;
+    height: 38px;
 
     flex-shrink: 0;
 
-    background: #f2f3f5;
+    background: #f1f2f4;
 
     border-radius: 9px;
 
@@ -716,9 +849,9 @@ body {
 
 .remove-file {
 
-    width: 29px;
+    width: 30px;
 
-    height: 29px;
+    height: 30px;
 
     flex-shrink: 0;
 
@@ -726,7 +859,7 @@ body {
 
     background: #f3f4f5;
 
-    border-radius: 7px;
+    border-radius: 8px;
 
     color: #777d84;
 
@@ -753,14 +886,14 @@ body {
 .empty-state {
 
     padding:
-        45px;
+        48px;
 
     background: #ffffff;
 
     border:
-        1px solid #e4e6e9;
+        1px solid #e3e5e8;
 
-    border-radius: 12px;
+    border-radius: 13px;
 
     text-align: center;
 }
@@ -768,18 +901,37 @@ body {
 
 .empty-icon {
 
-    font-size: 30px;
+    width: 52px;
+
+    height: 52px;
+
+    margin:
+        0 auto 12px;
+
+    background: #f3f4f5;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 25px;
 }
 
 
 .empty-state h3 {
 
     margin:
-        10px 0 5px;
+        0 0 6px;
 
     font-family:
         "Space Grotesk",
         sans-serif;
+
+    font-size: 16px;
 }
 
 
@@ -789,7 +941,7 @@ body {
 
     color: #898e96;
 
-    font-size: 13px;
+    font-size: 12px;
 }
 
 
@@ -801,42 +953,82 @@ body {
 
     width: 100%;
 
-    margin-top: 20px;
+    min-height: 51px;
 
-    padding:
-        15px;
+    margin-top: 19px;
 
     border: 0;
 
     border-radius: 11px;
 
-    background: #17191c;
+    background:
+        linear-gradient(
+            135deg,
+            #17191c,
+            #30343a
+        );
 
     color: #ffffff;
 
-    font-size: 14px;
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 13px;
 
     font-weight: 600;
 
     cursor: pointer;
 
-    transition: 0.2s;
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s,
+        opacity 0.2s;
 }
 
 
 .merge-button:hover:not(:disabled) {
 
-    background: #30343a;
+    transform:
+        translateY(-2px);
 
-    transform: translateY(-1px);
+    box-shadow:
+        0 9px 22px
+        rgba(0, 0, 0, 0.14);
 }
 
 
 .merge-button:disabled {
 
-    opacity: 0.45;
+    opacity: 0.42;
 
     cursor: not-allowed;
+}
+
+
+.loading-spinner {
+
+    display: inline-block;
+
+    animation:
+        spin 0.8s linear infinite;
+}
+
+
+@keyframes spin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
 }
 
 
@@ -848,13 +1040,42 @@ body {
 
     display: none;
 
-    margin-top: 14px;
+    margin-top: 13px;
 
-    padding: 12px;
+    padding:
+        12px 14px;
 
     border-radius: 9px;
 
-    font-size: 13px;
+    font-size: 12px;
+
+    font-weight: 500;
+
+    animation:
+        messageIn 0.25s ease;
+}
+
+
+@keyframes messageIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-5px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
 }
 
 
@@ -863,6 +1084,9 @@ body {
     display: block;
 
     background: #eaf8f1;
+
+    border:
+        1px solid #c9eddc;
 
     color: #18794e;
 }
@@ -874,6 +1098,9 @@ body {
 
     background: #fff0f0;
 
+    border:
+        1px solid #f4d0d0;
+
     color: #b83232;
 }
 
@@ -884,7 +1111,12 @@ body {
 
 footer {
 
-    margin-top: 55px;
+    margin-top: 50px;
+
+    padding-top: 18px;
+
+    border-top:
+        1px solid #e4e6e9;
 
     display: flex;
 
@@ -897,10 +1129,35 @@ footer {
 
 
 /* ==========================================================
-   RESPONSIVE
+   RESPONSIVE DESIGN
 ========================================================== */
 
-@media (max-width: 800px) {
+@media (max-width: 850px) {
+
+    .sidebar {
+
+        width: 210px;
+
+        min-width: 210px;
+    }
+
+
+    .main-content {
+
+        padding:
+            42px 28px;
+    }
+
+
+    .hero h2 {
+
+        font-size: 42px;
+    }
+
+}
+
+
+@media (max-width: 700px) {
 
     .sidebar {
 
@@ -917,7 +1174,7 @@ footer {
 
     .hero h2 {
 
-        font-size: 38px;
+        font-size: 39px;
     }
 
 
@@ -927,20 +1184,13 @@ footer {
 
         flex-direction: column;
 
-        gap: 14px;
+        gap: 13px;
     }
 
 
     .toolbar-actions {
 
         flex-wrap: wrap;
-    }
-
-
-    .header {
-
-        padding:
-            0 18px;
     }
 
 
@@ -952,7 +1202,30 @@ footer {
 }
 
 
-@media (max-width: 500px) {
+@media (max-width: 480px) {
+
+    .header {
+
+        height: 68px;
+
+        padding:
+            0 16px;
+    }
+
+
+    .brand-logo {
+
+        width: 37px;
+
+        height: 37px;
+    }
+
+
+    .brand-text h1 {
+
+        font-size: 17px;
+    }
+
 
     .main-content {
 
@@ -964,12 +1237,21 @@ footer {
     .hero h2 {
 
         font-size: 34px;
+
+        letter-spacing:
+            -1.5px;
+    }
+
+
+    .hero-description {
+
+        font-size: 13px;
     }
 
 
     .upload-area {
 
-        min-height: 180px;
+        min-height: 185px;
     }
 
 

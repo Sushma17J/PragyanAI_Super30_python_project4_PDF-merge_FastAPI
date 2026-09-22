@@ -1,26 +1,47 @@
+/*
+============================================================
+    MergeFlow Frontend
+
+    Features:
+    - PDF Merger
+    - Image Merger
+    - Drag & Drop
+    - File ordering
+    - Move Up
+    - Move Down
+    - Remove individual files
+    - Remove All
+    - Success notifications
+    - Error notifications
+    - Download merged PDF
+============================================================
+*/
+
+
 // ==========================================================
-// CONFIGURATION
+// BACKEND URL
 // ==========================================================
 
 // LOCAL DEVELOPMENT
-// Change this to your Render URL after deployment.
+//
+// const API_URL =
+//     "http://127.0.0.1:8000";
+
+
+// AFTER RENDER DEPLOYMENT
+// Replace this with your actual Render URL.
 
 const API_URL =
-    "http://127.0.0.1:8000";
+    "https://YOUR-RENDER-APP.onrender.com";
 
 
 // ==========================================================
-// ELEMENTS
+// DOM ELEMENTS
 // ==========================================================
 
 const fileInput =
     document.getElementById(
         "fileInput"
-    );
-
-const uploadCard =
-    document.getElementById(
-        "uploadCard"
     );
 
 const uploadArea =
@@ -63,9 +84,64 @@ const mergeButton =
         "mergeButton"
     );
 
+const mergeButtonText =
+    document.getElementById(
+        "mergeButtonText"
+    );
+
 const clearWorkspace =
     document.getElementById(
         "clearWorkspace"
+    );
+
+const pdfModeButton =
+    document.getElementById(
+        "pdfModeButton"
+    );
+
+const imageModeButton =
+    document.getElementById(
+        "imageModeButton"
+    );
+
+const heroTitle =
+    document.getElementById(
+        "heroTitle"
+    );
+
+const heroDescription =
+    document.getElementById(
+        "heroDescription"
+    );
+
+const eyebrow =
+    document.getElementById(
+        "eyebrow"
+    );
+
+const uploadTitle =
+    document.getElementById(
+        "uploadTitle"
+    );
+
+const uploadFormats =
+    document.getElementById(
+        "uploadFormats"
+    );
+
+const fileHeading =
+    document.getElementById(
+        "fileHeading"
+    );
+
+const emptyTitle =
+    document.getElementById(
+        "emptyTitle"
+    );
+
+const emptyDescription =
+    document.getElementById(
+        "emptyDescription"
     );
 
 const message =
@@ -75,10 +151,22 @@ const message =
 
 
 // ==========================================================
-// VARIABLES
+// APPLICATION STATE
 // ==========================================================
 
+// Current mode:
+// "pdf"    -> PDF merger
+// "image"  -> Image merger
+
+let currentMode = "pdf";
+
+
+// Files currently selected by user
+
 let files = [];
+
+
+// Currently selected file
 
 let selectedIndex = null;
 
@@ -87,8 +175,11 @@ let selectedIndex = null;
 // ALLOWED FILE TYPES
 // ==========================================================
 
-const allowedExtensions = [
-    "pdf",
+const pdfExtensions = [
+    "pdf"
+];
+
+const imageExtensions = [
     "jpg",
     "jpeg",
     "png"
@@ -108,9 +199,14 @@ fileInput.addEventListener(
                 event.target.files
             );
 
-        addFiles(selectedFiles);
+        addFiles(
+            selectedFiles
+        );
 
-        // Allow selecting the same file again
+
+        // Allows the user to
+        // select the same file again.
+
         event.target.value = "";
 
     }
@@ -118,7 +214,7 @@ fileInput.addEventListener(
 
 
 // ==========================================================
-// DRAG & DROP
+// DRAG OVER
 // ==========================================================
 
 uploadArea.addEventListener(
@@ -135,6 +231,10 @@ uploadArea.addEventListener(
 );
 
 
+// ==========================================================
+// DRAG LEAVE
+// ==========================================================
+
 uploadArea.addEventListener(
     "dragleave",
     function () {
@@ -147,6 +247,10 @@ uploadArea.addEventListener(
 );
 
 
+// ==========================================================
+// DROP FILES
+// ==========================================================
+
 uploadArea.addEventListener(
     "drop",
     function (event) {
@@ -157,12 +261,16 @@ uploadArea.addEventListener(
             "dragover"
         );
 
+
         const droppedFiles =
             Array.from(
                 event.dataTransfer.files
             );
 
-        addFiles(droppedFiles);
+
+        addFiles(
+            droppedFiles
+        );
 
     }
 );
@@ -189,19 +297,55 @@ function addFiles(newFiles) {
                     .toLowerCase();
 
 
+            // ------------------------------------------------
+            // Check file based on current mode
+            // ------------------------------------------------
+
+            let isValid = false;
+
+
             if (
-                !allowedExtensions.includes(
-                    extension
-                )
+                currentMode === "pdf"
             ) {
+
+                isValid =
+                    pdfExtensions.includes(
+                        extension
+                    );
+
+            }
+
+
+            else {
+
+                isValid =
+                    imageExtensions.includes(
+                        extension
+                    );
+
+            }
+
+
+            // ------------------------------------------------
+            // Reject invalid file
+            // ------------------------------------------------
+
+            if (!isValid) {
 
                 rejectedCount++;
 
                 return;
+
             }
 
 
-            files.push(file);
+            // ------------------------------------------------
+            // Add valid file
+            // ------------------------------------------------
+
+            files.push(
+                file
+            );
 
             addedCount++;
 
@@ -211,24 +355,57 @@ function addFiles(newFiles) {
 
     selectedIndex = null;
 
+
     renderFiles();
 
 
+    // --------------------------------------------------------
+    // Success message
+    // --------------------------------------------------------
+
     if (addedCount > 0) {
 
+        const fileType =
+            currentMode === "pdf"
+                ? "PDF"
+                : "Image";
+
+
+        const plural =
+            addedCount === 1
+                ? ""
+                : "s";
+
+
         showMessage(
-            `${addedCount} file(s) added successfully.`,
+
+            `✓ ${fileType}${plural} uploaded successfully`,
+
             "success"
+
         );
 
     }
 
 
+    // --------------------------------------------------------
+    // Rejected message
+    // --------------------------------------------------------
+
     if (rejectedCount > 0) {
 
+        const allowed =
+            currentMode === "pdf"
+                ? "PDF"
+                : "JPG, JPEG and PNG";
+
+
         showMessage(
-            "Some files were rejected. Only PDF, JPG, JPEG and PNG files are allowed.",
+
+            `Only ${allowed} files are allowed in this mode.`,
+
             "error"
+
         );
 
     }
@@ -237,7 +414,7 @@ function addFiles(newFiles) {
 
 
 // ==========================================================
-// RENDER FILES
+// RENDER FILE LIST
 // ==========================================================
 
 function renderFiles() {
@@ -245,7 +422,13 @@ function renderFiles() {
     fileList.innerHTML = "";
 
 
-    if (files.length === 0) {
+    // --------------------------------------------------------
+    // Empty state
+    // --------------------------------------------------------
+
+    if (
+        files.length === 0
+    ) {
 
         fileList.appendChild(
             emptyState
@@ -256,6 +439,11 @@ function renderFiles() {
 
     }
 
+
+    // --------------------------------------------------------
+    // File list
+    // --------------------------------------------------------
+
     else {
 
         emptyState.style.display =
@@ -264,6 +452,8 @@ function renderFiles() {
 
         files.forEach(
             function (file, index) {
+
+                // Create row
 
                 const row =
                     document.createElement(
@@ -274,6 +464,8 @@ function renderFiles() {
                 row.className =
                     "file-row";
 
+
+                // Highlight selected file
 
                 if (
                     selectedIndex === index
@@ -286,56 +478,67 @@ function renderFiles() {
                 }
 
 
+                // Select file
+
                 row.addEventListener(
                     "click",
                     function () {
 
-                        selectFile(index);
+                        selectFile(
+                            index
+                        );
 
                     }
                 );
 
 
-                // ==========================================
+                // ------------------------------------------------
                 // NUMBER
-                // ==========================================
+                // ------------------------------------------------
 
                 const number =
                     document.createElement(
                         "div"
                     );
 
+
                 number.className =
                     "file-number";
+
 
                 number.textContent =
                     index + 1;
 
 
-                // ==========================================
+                // ------------------------------------------------
                 // ICON
-                // ==========================================
+                // ------------------------------------------------
 
                 const icon =
                     document.createElement(
                         "div"
                     );
 
+
                 icon.className =
                     "file-icon";
 
+
                 icon.textContent =
-                    getFileIcon(file);
+                    getFileIcon(
+                        file
+                    );
 
 
-                // ==========================================
-                // INFO
-                // ==========================================
+                // ------------------------------------------------
+                // FILE INFORMATION
+                // ------------------------------------------------
 
                 const info =
                     document.createElement(
                         "div"
                     );
+
 
                 info.className =
                     "file-info";
@@ -346,8 +549,10 @@ function renderFiles() {
                         "div"
                     );
 
+
                 name.className =
                     "file-name";
+
 
                 name.textContent =
                     file.name;
@@ -358,8 +563,10 @@ function renderFiles() {
                         "div"
                     );
 
+
                 size.className =
                     "file-size";
+
 
                 size.textContent =
                     formatFileSize(
@@ -371,22 +578,25 @@ function renderFiles() {
                     name
                 );
 
+
                 info.appendChild(
                     size
                 );
 
 
-                // ==========================================
+                // ------------------------------------------------
                 // REMOVE BUTTON
-                // ==========================================
+                // ------------------------------------------------
 
                 const removeButton =
                     document.createElement(
                         "button"
                     );
 
+
                 removeButton.className =
                     "remove-file";
+
 
                 removeButton.textContent =
                     "×";
@@ -402,27 +612,32 @@ function renderFiles() {
 
                         event.stopPropagation();
 
-                        removeFile(index);
+                        removeFile(
+                            index
+                        );
 
                     }
                 );
 
 
-                // ==========================================
+                // ------------------------------------------------
                 // ADD ELEMENTS
-                // ==========================================
+                // ------------------------------------------------
 
                 row.appendChild(
                     number
                 );
 
+
                 row.appendChild(
                     icon
                 );
 
+
                 row.appendChild(
                     info
                 );
+
 
                 row.appendChild(
                     removeButton
@@ -440,6 +655,7 @@ function renderFiles() {
 
 
     updateControls();
+
 }
 
 
@@ -449,7 +665,9 @@ function renderFiles() {
 
 function selectFile(index) {
 
-    selectedIndex = index;
+    selectedIndex =
+        index;
+
 
     renderFiles();
 
@@ -457,7 +675,7 @@ function selectFile(index) {
 
 
 // ==========================================================
-// REMOVE FILE
+// REMOVE ONE FILE
 // ==========================================================
 
 function removeFile(index) {
@@ -472,11 +690,14 @@ function removeFile(index) {
     );
 
 
+    // Adjust selected index
+
     if (
         selectedIndex === index
     ) {
 
-        selectedIndex = null;
+        selectedIndex =
+            null;
 
     }
 
@@ -494,15 +715,18 @@ function removeFile(index) {
 
 
     showMessage(
-        `${removedFile.name} removed.`,
+
+        `✓ ${removedFile.name} removed`,
+
         "success"
+
     );
 
 }
 
 
 // ==========================================================
-// REMOVE ALL
+// REMOVE ALL FILES
 // ==========================================================
 
 function removeAllFiles() {
@@ -520,12 +744,16 @@ function removeAllFiles() {
 
     selectedIndex = null;
 
+
     renderFiles();
 
 
     showMessage(
-        "All files removed.",
+
+        "✓ All files removed",
+
         "success"
+
     );
 
 }
@@ -561,7 +789,7 @@ moveUpButton.addEventListener(
         }
 
 
-        const current =
+        const currentFile =
             files[selectedIndex];
 
 
@@ -570,7 +798,7 @@ moveUpButton.addEventListener(
 
 
         files[selectedIndex - 1] =
-            current;
+            currentFile;
 
 
         selectedIndex--;
@@ -600,7 +828,7 @@ moveDownButton.addEventListener(
         }
 
 
-        const current =
+        const currentFile =
             files[selectedIndex];
 
 
@@ -609,7 +837,7 @@ moveDownButton.addEventListener(
 
 
         files[selectedIndex + 1] =
-            current;
+            currentFile;
 
 
         selectedIndex++;
@@ -622,170 +850,448 @@ moveDownButton.addEventListener(
 
 
 // ==========================================================
-// MERGE
+// PDF MODE
+// ==========================================================
+
+pdfModeButton.addEventListener(
+    "click",
+    function () {
+
+        switchMode(
+            "pdf"
+        );
+
+    }
+);
+
+
+// ==========================================================
+// IMAGE MODE
+// ==========================================================
+
+imageModeButton.addEventListener(
+    "click",
+    function () {
+
+        switchMode(
+            "image"
+        );
+
+    }
+);
+
+
+// ==========================================================
+// SWITCH MODE
+// ==========================================================
+
+function switchMode(mode) {
+
+    currentMode =
+        mode;
+
+
+    // Clear existing files
+    // because PDF and Image
+    // modes accept different formats.
+
+    files = [];
+
+    selectedIndex = null;
+
+
+    // --------------------------------------------------------
+    // PDF MODE
+    // --------------------------------------------------------
+
+    if (
+        mode === "pdf"
+    ) {
+
+        pdfModeButton.classList.add(
+            "active"
+        );
+
+
+        imageModeButton.classList.remove(
+            "active"
+        );
+
+
+        eyebrow.textContent =
+            "PDF WORKFLOW";
+
+
+        heroTitle.innerHTML =
+            `
+            Merge files.
+            <br>
+            <span>
+                One clean PDF.
+            </span>
+            `;
+
+
+        heroDescription.textContent =
+            "Combine your PDF files, arrange them exactly how you want, and download one polished document.";
+
+
+        uploadTitle.textContent =
+            "Drop PDF files here";
+
+
+        uploadFormats.textContent =
+            "PDF files only";
+
+
+        fileHeading.textContent =
+            "Your PDF files";
+
+
+        emptyTitle.textContent =
+            "No PDF files yet";
+
+
+        emptyDescription.textContent =
+            "Upload PDF files to start building your document.";
+
+
+        mergeButtonText.textContent =
+            "Merge & Download PDF";
+
+
+        fileInput.accept =
+            ".pdf";
+
+    }
+
+
+    // --------------------------------------------------------
+    // IMAGE MODE
+    // --------------------------------------------------------
+
+    else {
+
+        imageModeButton.classList.add(
+            "active"
+        );
+
+
+        pdfModeButton.classList.remove(
+            "active"
+        );
+
+
+        eyebrow.textContent =
+            "IMAGE WORKFLOW";
+
+
+        heroTitle.innerHTML =
+            `
+            Merge images.
+            <br>
+            <span>
+                One beautiful PDF.
+            </span>
+            `;
+
+
+        heroDescription.textContent =
+            "Combine your images, arrange them exactly how you want, and download them as one polished PDF.";
+
+
+        uploadTitle.textContent =
+            "Drop images here";
+
+
+        uploadFormats.textContent =
+            "JPG, JPEG and PNG";
+
+
+        fileHeading.textContent =
+            "Your images";
+
+
+        emptyTitle.textContent =
+            "No images yet";
+
+
+        emptyDescription.textContent =
+            "Upload images to start building your document.";
+
+
+        mergeButtonText.textContent =
+            "Merge Images & Download";
+
+
+        fileInput.accept =
+            ".jpg,.jpeg,.png";
+
+    }
+
+
+    renderFiles();
+
+}
+
+
+// ==========================================================
+// MERGE BUTTON
 // ==========================================================
 
 mergeButton.addEventListener(
     "click",
-    async function () {
+    mergeFiles
+);
+
+
+// ==========================================================
+// MERGE FILES
+// ==========================================================
+
+async function mergeFiles() {
+
+    // --------------------------------------------------------
+    // Check files
+    // --------------------------------------------------------
+
+    if (
+        files.length === 0
+    ) {
+
+        showMessage(
+
+            currentMode === "pdf"
+                ? "Please upload at least one PDF."
+                : "Please upload at least one image.",
+
+            "error"
+
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Loading state
+    // --------------------------------------------------------
+
+    setLoading(
+        true
+    );
+
+
+    try {
+
+        // Create FormData
+
+        const formData =
+            new FormData();
+
+
+        // Add files in displayed order
+
+        files.forEach(
+            function (file) {
+
+                formData.append(
+                    "files",
+                    file
+                );
+
+            }
+        );
+
+
+        // ----------------------------------------------------
+        // Select correct API
+        // ----------------------------------------------------
+
+        const endpoint =
+            currentMode === "pdf"
+                ? "/merge/pdf"
+                : "/merge/images";
+
+
+        // ----------------------------------------------------
+        // Send request to Render
+        // ----------------------------------------------------
+
+        const response =
+            await fetch(
+
+                `${API_URL}${endpoint}`,
+
+                {
+                    method: "POST",
+
+                    body: formData
+                }
+
+            );
+
+
+        // ----------------------------------------------------
+        // Handle error
+        // ----------------------------------------------------
 
         if (
-            files.length === 0
+            !response.ok
         ) {
 
-            showMessage(
-                "Please upload at least one file.",
-                "error"
-            );
-
-            return;
-        }
+            let errorMessage =
+                "Unable to merge files.";
 
 
-        setLoading(true);
+            try {
+
+                const data =
+                    await response.json();
 
 
-        try {
+                errorMessage =
+                    data.detail ||
+                    errorMessage;
 
-            const formData =
-                new FormData();
+            }
 
+            catch (error) {
 
-            // Important:
-            // Files are appended in the exact
-            // order displayed in the frontend.
-
-            files.forEach(
-                function (file) {
-
-                    formData.append(
-                        "files",
-                        file
-                    );
-
-                }
-            );
-
-
-            const response =
-                await fetch(
-                    `${API_URL}/merge`,
-                    {
-                        method: "POST",
-                        body: formData
-                    }
-                );
-
-
-            if (
-                !response.ok
-            ) {
-
-                let errorMessage =
-                    "Unable to merge files.";
-
-
-                try {
-
-                    const data =
-                        await response.json();
-
-                    errorMessage =
-                        data.detail ||
-                        errorMessage;
-
-                }
-
-                catch (error) {
-
-                    // Ignore JSON parsing error
-
-                }
-
-
-                throw new Error(
-                    errorMessage
-                );
+                // Ignore JSON parsing error
 
             }
 
 
-            const blob =
-                await response.blob();
+            throw new Error(
+                errorMessage
+            );
+
+        }
 
 
-            // ==============================================
-            // DOWNLOAD
-            // ==============================================
+        // ----------------------------------------------------
+        // Convert response to Blob
+        // ----------------------------------------------------
 
-            const downloadUrl =
-                window.URL.createObjectURL(
-                    blob
-                );
+        const blob =
+            await response.blob();
 
 
-            const link =
-                document.createElement(
-                    "a"
-                );
+        // ----------------------------------------------------
+        // Create download URL
+        // ----------------------------------------------------
 
-
-            link.href =
-                downloadUrl;
-
-
-            link.download =
-                "merged_files.pdf";
-
-
-            document.body.appendChild(
-                link
+        const downloadURL =
+            window.URL.createObjectURL(
+                blob
             );
 
 
-            link.click();
+        // ----------------------------------------------------
+        // Create download link
+        // ----------------------------------------------------
 
-
-            link.remove();
-
-
-            window.URL.revokeObjectURL(
-                downloadUrl
+        const link =
+            document.createElement(
+                "a"
             );
 
+
+        link.href =
+            downloadURL;
+
+
+        link.download =
+            currentMode === "pdf"
+                ? "merged_pdfs.pdf"
+                : "merged_images.pdf";
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        // Start download
+
+        link.click();
+
+
+        // Remove link
+
+        link.remove();
+
+
+        // Release memory
+
+        window.URL.revokeObjectURL(
+            downloadURL
+        );
+
+
+        // ----------------------------------------------------
+        // SUCCESS MESSAGE
+        // ----------------------------------------------------
+
+        if (
+            currentMode === "pdf"
+        ) {
 
             showMessage(
-                "PDF merged successfully. Your download has started.",
+
+                "✓ PDF merged successfully! Download started.",
+
                 "success"
+
             );
 
         }
 
-
-        catch (error) {
-
-            console.error(
-                error
-            );
-
+        else {
 
             showMessage(
-                error.message ||
-                "Something went wrong.",
-                "error"
+
+                "✓ Images merged successfully! Download started.",
+
+                "success"
+
             );
-
-        }
-
-
-        finally {
-
-            setLoading(false);
 
         }
 
     }
-);
+
+
+    catch (error) {
+
+        console.error(
+            "Merge error:",
+            error
+        );
+
+
+        showMessage(
+
+            `✕ ${error.message}`,
+
+            "error"
+
+        );
+
+    }
+
+
+    finally {
+
+        setLoading(
+            false
+        );
+
+    }
+
+}
 
 
 // ==========================================================
@@ -801,12 +1307,23 @@ function setLoading(
         files.length === 0;
 
 
-    if (loading) {
+    if (
+        loading
+    ) {
 
         mergeButton.innerHTML =
             `
-            <span>⏳</span>
-            Merging files...
+            <span class="loading-spinner">
+                ⟳
+            </span>
+
+            <span>
+                ${
+                    currentMode === "pdf"
+                    ? "Merging PDFs..."
+                    : "Merging Images..."
+                }
+            </span>
             `;
 
     }
@@ -815,8 +1332,17 @@ function setLoading(
 
         mergeButton.innerHTML =
             `
-            <span>✦</span>
-            Merge & Download PDF
+            <span>
+                ✦
+            </span>
+
+            <span id="mergeButtonText">
+                ${
+                    currentMode === "pdf"
+                    ? "Merge & Download PDF"
+                    : "Merge Images & Download"
+                }
+            </span>
             `;
 
     }
@@ -825,7 +1351,7 @@ function setLoading(
 
 
 // ==========================================================
-// UPDATE CONTROLS
+// UPDATE BUTTONS
 // ==========================================================
 
 function updateControls() {
@@ -914,7 +1440,9 @@ function formatFileSize(
 
 
     return (
+
         parseFloat(
+
             (
                 bytes /
                 Math.pow(
@@ -922,16 +1450,24 @@ function formatFileSize(
                     index
                 )
             ).toFixed(2)
-        ) +
-        " " +
+
+        )
+
+        +
+
+        " "
+
+        +
+
         units[index]
+
     );
 
 }
 
 
 // ==========================================================
-// MESSAGE
+// SHOW MESSAGE
 // ==========================================================
 
 function showMessage(
@@ -947,6 +1483,9 @@ function showMessage(
         `message ${type}`;
 
 
+    // Automatically hide
+    // the notification after 5 seconds.
+
     setTimeout(
         function () {
 
@@ -954,14 +1493,16 @@ function showMessage(
                 "message";
 
         },
-        4000
+        5000
     );
 
 }
 
 
 // ==========================================================
-// INITIAL RENDER
+// INITIALIZE APPLICATION
 // ==========================================================
 
-renderFiles();
+switchMode(
+    "pdf"
+);

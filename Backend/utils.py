@@ -6,132 +6,67 @@ from pypdf import PdfReader, PdfWriter
 
 
 # =========================================================
-# FILE EXTENSIONS
-# =========================================================
-
-PDF_EXTENSIONS = {
-    ".pdf"
-}
-
-IMAGE_EXTENSIONS = {
-    ".jpg",
-    ".jpeg",
-    ".png"
-}
-
-
-# =========================================================
 # CHECK PDF
 # =========================================================
 
-def is_pdf(filename: str) -> bool:
+def is_pdf(filename):
 
     extension = os.path.splitext(filename)[1].lower()
 
-    return extension in PDF_EXTENSIONS
+    return extension == ".pdf"
 
 
 # =========================================================
 # CHECK IMAGE
 # =========================================================
 
-def is_image(filename: str) -> bool:
+def is_image(filename):
 
     extension = os.path.splitext(filename)[1].lower()
 
-    return extension in IMAGE_EXTENSIONS
-
-
-# =========================================================
-# ADD PDF TO WRITER
-# =========================================================
-
-def add_pdf_to_writer(
-    file_data: bytes,
-    writer: PdfWriter
-):
-
-    # Convert bytes into a file-like object
-    pdf_stream = io.BytesIO(file_data)
-
-    # Read PDF
-    reader = PdfReader(pdf_stream)
-
-    # Add every page
-    for page in reader.pages:
-
-        writer.add_page(page)
-
-
-# =========================================================
-# ADD IMAGE TO PDF
-# =========================================================
-
-def add_image_to_writer(
-    file_data: bytes,
-    writer: PdfWriter
-):
-
-    # Read image
-    image_stream = io.BytesIO(file_data)
-
-    image = Image.open(image_stream)
-
-    # Convert image to RGB
-    # Required for PDF conversion
-    if image.mode != "RGB":
-
-        image = image.convert("RGB")
-
-
-    # Temporary PDF in memory
-    pdf_stream = io.BytesIO()
-
-    # Convert image to PDF
-    image.save(
-        pdf_stream,
-        format="PDF"
-    )
-
-    pdf_stream.seek(0)
-
-
-    # Read generated PDF
-    reader = PdfReader(pdf_stream)
-
-
-    # Add page to final PDF
-    for page in reader.pages:
-
-        writer.add_page(page)
+    return extension in [
+        ".jpg",
+        ".jpeg",
+        ".png"
+    ]
 
 
 # =========================================================
 # MERGE PDF FILES
 # =========================================================
 
-def merge_pdf_files(uploaded_files):
+def merge_pdf_files(file_data_list):
 
+    # Create PDF writer
     writer = PdfWriter()
 
 
-    # IMPORTANT:
-    # uploaded_files are already in frontend order
+    # Process files in the order
+    # received from frontend
 
-    for file_data in uploaded_files:
+    for file_data in file_data_list:
 
-        add_pdf_to_writer(
-            file_data,
-            writer
-        )
+        # Convert bytes into file object
+        pdf_stream = io.BytesIO(file_data)
+
+        # Read PDF
+        reader = PdfReader(pdf_stream)
 
 
-    # Create output in memory
+        # Add every page
+        for page in reader.pages:
+
+            writer.add_page(page)
+
+
+    # Create output PDF in memory
+
     output = io.BytesIO()
 
     writer.write(output)
 
     output.seek(0)
+
 
     return output
 
@@ -140,27 +75,62 @@ def merge_pdf_files(uploaded_files):
 # MERGE IMAGE FILES
 # =========================================================
 
-def merge_image_files(uploaded_files):
+def merge_image_files(file_data_list):
+
+    # Create PDF writer
 
     writer = PdfWriter()
 
 
-    # Images are processed
-    # in the order received
+    # Process images in frontend order
 
-    for file_data in uploaded_files:
+    for file_data in file_data_list:
 
-        add_image_to_writer(
-            file_data,
-            writer
+        # Read image
+
+        image_stream = io.BytesIO(file_data)
+
+        image = Image.open(image_stream)
+
+
+        # Convert to RGB
+
+        if image.mode != "RGB":
+
+            image = image.convert("RGB")
+
+
+        # Convert image to PDF
+
+        pdf_stream = io.BytesIO()
+
+        image.save(
+            pdf_stream,
+            format="PDF"
         )
 
+        pdf_stream.seek(0)
 
-    # Create output
+
+        # Read generated PDF
+
+        reader = PdfReader(pdf_stream)
+
+
+        # Add pages
+
+        for page in reader.pages:
+
+            writer.add_page(page)
+
+
+    # Create final PDF
+
     output = io.BytesIO()
 
     writer.write(output)
 
     output.seek(0)
+
 
     return output

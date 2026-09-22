@@ -1,46 +1,51 @@
 // =========================================================
-// PRAGYANAI PDF MERGER
+// PRAGYANAI PDF & IMAGE MERGER
 // FRONTEND JAVASCRIPT
 // =========================================================
 
 
 // =========================================================
-// RENDER BACKEND URL
+// 1. BACKEND URL
 // =========================================================
 //
-// CHANGE THIS TO YOUR ACTUAL RENDER URL.
+// FOR LOCAL TESTING:
+// const API_URL = "http://127.0.0.1:8000";
 //
-// Example:
+// AFTER DEPLOYING BACKEND TO RENDER:
+// const API_URL = "https://your-app-name.onrender.com";
 //
-// const API_URL =
-//     "https://pragyanai-pdf-merger.onrender.com";
-//
+// IMPORTANT:
+// Do NOT add /merge/pdf here.
 // =========================================================
 
-const API_URL =
-    "https://YOUR-RENDER-APP.onrender.com";
+const API_URL = "http://127.0.0.1:8000";
+
+// After Render deployment, change it to:
+//
+// const API_URL = "https://your-render-app.onrender.com";
 
 
 // =========================================================
-// APPLICATION STATE
+// 2. APPLICATION STATE
 // =========================================================
 
-// Current mode
+// Current application mode
+// "pdf"   = PDF merger
+// "image" = Image merger
 
 let currentMode = "pdf";
 
-
-// Files are stored in this array.
+// Stores uploaded files.
 //
-// VERY IMPORTANT:
-// The order of this array is the
-// actual merge order.
+// IMPORTANT:
+// The order of this array is the actual
+// order in which files will be merged.
 
 let files = [];
 
 
 // =========================================================
-// HTML ELEMENTS
+// 3. GET HTML ELEMENTS
 // =========================================================
 
 const pdfModeBtn =
@@ -104,30 +109,35 @@ const mergeBtnText =
 
 
 // =========================================================
-// START APPLICATION
+// 4. START APPLICATION
 // =========================================================
 
 updateUI();
 
 
 // =========================================================
-// PDF MODE
+// 5. PDF MODE BUTTON
 // =========================================================
 
 pdfModeBtn.addEventListener(
     "click",
     function () {
 
+        // Change mode
         currentMode = "pdf";
 
+        // Clear previous files
         files = [];
 
+        // Clear file input
         fileInput.value = "";
 
+        // Change active button
         pdfModeBtn.classList.add("active");
 
         imageModeBtn.classList.remove("active");
 
+        // Update page
         updateUI();
 
         showStatus(
@@ -140,23 +150,28 @@ pdfModeBtn.addEventListener(
 
 
 // =========================================================
-// IMAGE MODE
+// 6. IMAGE MODE BUTTON
 // =========================================================
 
 imageModeBtn.addEventListener(
     "click",
     function () {
 
+        // Change mode
         currentMode = "image";
 
+        // Clear previous files
         files = [];
 
+        // Clear file input
         fileInput.value = "";
 
+        // Change active button
         imageModeBtn.classList.add("active");
 
         pdfModeBtn.classList.remove("active");
 
+        // Update page
         updateUI();
 
         showStatus(
@@ -169,17 +184,20 @@ imageModeBtn.addEventListener(
 
 
 // =========================================================
-// CLEAR WORKSPACE
+// 7. CLEAR WORKSPACE
 // =========================================================
 
 clearWorkspaceBtn.addEventListener(
     "click",
     function () {
 
+        // Remove all files
         files = [];
 
+        // Clear file input
         fileInput.value = "";
 
+        // Update display
         renderFiles();
 
         updateMergeButton();
@@ -194,12 +212,15 @@ clearWorkspaceBtn.addEventListener(
 
 
 // =========================================================
-// BROWSE BUTTON
+// 8. BROWSE FILES BUTTON
 // =========================================================
 
 browseBtn.addEventListener(
     "click",
     function (event) {
+
+        // Prevent the drop-zone click
+        // from firing twice.
 
         event.stopPropagation();
 
@@ -210,19 +231,20 @@ browseBtn.addEventListener(
 
 
 // =========================================================
-// CLICK DROP ZONE
+// 9. CLICK DROP ZONE
 // =========================================================
 
 dropZone.addEventListener(
     "click",
     function (event) {
 
+        // If Browse button was clicked,
+        // don't trigger file picker twice.
+
         if (
             event.target === browseBtn
         ) {
-
             return;
-
         }
 
         fileInput.click();
@@ -232,24 +254,26 @@ dropZone.addEventListener(
 
 
 // =========================================================
-// SELECT FILES
+// 10. FILE INPUT CHANGE
 // =========================================================
 
 fileInput.addEventListener(
     "change",
     function (event) {
 
+        // Convert FileList to normal array
         const selectedFiles =
             Array.from(
                 event.target.files
             );
 
+        // Add files
         addFiles(selectedFiles);
 
-        // Clear input
+        // Clear input.
         //
-        // This allows selecting the
-        // same file again later.
+        // This allows the user to select
+        // the same file again later.
 
         fileInput.value = "";
 
@@ -258,13 +282,14 @@ fileInput.addEventListener(
 
 
 // =========================================================
-// DRAG OVER
+// 11. DRAG OVER
 // =========================================================
 
 dropZone.addEventListener(
     "dragover",
     function (event) {
 
+        // Required for drop to work
         event.preventDefault();
 
         dropZone.classList.add(
@@ -276,7 +301,7 @@ dropZone.addEventListener(
 
 
 // =========================================================
-// DRAG LEAVE
+// 12. DRAG LEAVE
 // =========================================================
 
 dropZone.addEventListener(
@@ -292,26 +317,27 @@ dropZone.addEventListener(
 
 
 // =========================================================
-// DROP FILES
+// 13. DROP FILES
 // =========================================================
 
 dropZone.addEventListener(
     "drop",
     function (event) {
 
+        // Prevent browser from opening files
         event.preventDefault();
 
         dropZone.classList.remove(
             "dragging"
         );
 
-
+        // Get dropped files
         const droppedFiles =
             Array.from(
                 event.dataTransfer.files
             );
 
-
+        // Add files
         addFiles(droppedFiles);
 
     }
@@ -319,30 +345,29 @@ dropZone.addEventListener(
 
 
 // =========================================================
-// ADD FILES
+// 14. ADD FILES
 // =========================================================
 
 function addFiles(selectedFiles) {
 
-
+    // Nothing selected
     if (
         selectedFiles.length === 0
     ) {
-
         return;
-
     }
 
 
     const validFiles = [];
 
 
+    // Check every selected file
+
     for (
         const file of selectedFiles
     ) {
 
-
-        // Check extension
+        // Check file type
 
         if (
             !isValidFile(file)
@@ -354,7 +379,6 @@ function addFiles(selectedFiles) {
             );
 
             continue;
-
         }
 
 
@@ -362,13 +386,17 @@ function addFiles(selectedFiles) {
 
         const duplicate =
             files.some(
-                existingFile =>
+                function (existingFile) {
 
-                    existingFile.name ===
-                    file.name &&
+                    return (
+                        existingFile.name ===
+                        file.name &&
 
-                    existingFile.size ===
-                    file.size
+                        existingFile.size ===
+                        file.size
+                    );
+
+                }
             );
 
 
@@ -380,16 +408,17 @@ function addFiles(selectedFiles) {
             );
 
             continue;
-
         }
 
+
+        // File is valid
 
         validFiles.push(file);
 
     }
 
 
-    // Maximum 20 files
+    // Check maximum 20 files
 
     if (
         files.length +
@@ -403,11 +432,10 @@ function addFiles(selectedFiles) {
         );
 
         return;
-
     }
 
 
-    // Add to array
+    // Add valid files to array
 
     files.push(
         ...validFiles
@@ -421,7 +449,7 @@ function addFiles(selectedFiles) {
     updateMergeButton();
 
 
-    // Success
+    // Show success message
 
     if (
         validFiles.length > 0
@@ -436,9 +464,7 @@ function addFiles(selectedFiles) {
                 "success"
             );
 
-        }
-
-        else {
+        } else {
 
             showStatus(
                 "✓ Image uploaded successfully",
@@ -453,7 +479,7 @@ function addFiles(selectedFiles) {
 
 
 // =========================================================
-// VALIDATE FILE
+// 15. VALIDATE FILE TYPE
 // =========================================================
 
 function isValidFile(file) {
@@ -461,6 +487,8 @@ function isValidFile(file) {
     const filename =
         file.name.toLowerCase();
 
+
+    // PDF mode
 
     if (
         currentMode === "pdf"
@@ -473,30 +501,29 @@ function isValidFile(file) {
     }
 
 
+    // Image mode
+
     return (
-
         filename.endsWith(".jpg") ||
-
         filename.endsWith(".jpeg") ||
-
         filename.endsWith(".png")
-
     );
 
 }
 
 
 // =========================================================
-// DISPLAY FILES
+// 16. DISPLAY FILES
 // =========================================================
 
 function renderFiles() {
 
+    // Clear current list
 
     fileList.innerHTML = "";
 
 
-    // No files
+    // If no files
 
     if (
         files.length === 0
@@ -521,31 +548,34 @@ function renderFiles() {
         updateFileCount();
 
         return;
-
     }
 
 
-    // Create each file row
+    // Create one row for each file
 
     files.forEach(
         function (file, index) {
 
+            // Create file row
 
             const fileItem =
                 document.createElement(
                     "div"
                 );
 
-
             fileItem.className =
                 "file-item";
 
+
+            // Choose icon
 
             const icon =
                 currentMode === "pdf"
                     ? "📄"
                     : "🖼️";
 
+
+            // Create HTML
 
             fileItem.innerHTML = `
 
@@ -582,46 +612,48 @@ function renderFiles() {
                     <!-- MOVE UP -->
 
                     <button
+                        type="button"
                         class="move-btn"
                         data-action="up"
                         data-index="${index}"
-                        ${index === 0
-                            ? "disabled"
-                            : ""}
+
+                        ${
+                            index === 0
+                                ? "disabled"
+                                : ""
+                        }
                     >
-
                         ↑
-
                     </button>
 
 
                     <!-- MOVE DOWN -->
 
                     <button
+                        type="button"
                         class="move-btn"
                         data-action="down"
                         data-index="${index}"
-                        ${index ===
-                            files.length - 1
-                            ? "disabled"
-                            : ""}
+
+                        ${
+                            index === files.length - 1
+                                ? "disabled"
+                                : ""
+                        }
                     >
-
                         ↓
-
                     </button>
 
 
                     <!-- REMOVE -->
 
                     <button
+                        type="button"
                         class="remove-btn"
                         data-action="remove"
                         data-index="${index}"
                     >
-
                         ✕
-
                     </button>
 
 
@@ -629,6 +661,8 @@ function renderFiles() {
 
             `;
 
+
+            // Add row to list
 
             fileList.appendChild(
                 fileItem
@@ -644,20 +678,23 @@ function renderFiles() {
 
 
 // =========================================================
-// FILE BUTTON EVENTS
+// 17. FILE BUTTON HANDLER
 // =========================================================
 //
-// Event delegation is used because
-// file buttons are dynamically created.
+// This handles:
+//     Move Up
+//     Move Down
+//     Remove
 //
-// This makes Move Up, Move Down
-// and Remove work correctly.
-//
+// The buttons are dynamically created,
+// so event delegation is used.
+// =========================================================
 
 fileList.addEventListener(
     "click",
     function (event) {
 
+        // Find clicked button
 
         const button =
             event.target.closest(
@@ -665,16 +702,20 @@ fileList.addEventListener(
             );
 
 
+        // If click wasn't on button
+
         if (!button) {
-
             return;
-
         }
 
+
+        // Get action
 
         const action =
             button.dataset.action;
 
+
+        // Get file index
 
         const index =
             Number(
@@ -682,7 +723,7 @@ fileList.addEventListener(
             );
 
 
-        // MOVE UP
+        // Move Up
 
         if (
             action === "up"
@@ -693,7 +734,7 @@ fileList.addEventListener(
         }
 
 
-        // MOVE DOWN
+        // Move Down
 
         else if (
             action === "down"
@@ -704,7 +745,7 @@ fileList.addEventListener(
         }
 
 
-        // REMOVE
+        // Remove
 
         else if (
             action === "remove"
@@ -719,25 +760,24 @@ fileList.addEventListener(
 
 
 // =========================================================
-// MOVE FILE UP
+// 18. MOVE FILE UP
 // =========================================================
 
 function moveFileUp(index) {
 
+    // First file cannot move up
 
     if (
         index <= 0
     ) {
-
         return;
-
     }
 
 
     // Swap current file
     // with previous file
 
-    const temp =
+    const temporary =
         files[index - 1];
 
 
@@ -746,10 +786,10 @@ function moveFileUp(index) {
 
 
     files[index] =
-        temp;
+        temporary;
 
 
-    // Redraw
+    // Refresh display
 
     renderFiles();
 
@@ -765,25 +805,24 @@ function moveFileUp(index) {
 
 
 // =========================================================
-// MOVE FILE DOWN
+// 19. MOVE FILE DOWN
 // =========================================================
 
 function moveFileDown(index) {
 
+    // Last file cannot move down
 
     if (
         index >= files.length - 1
     ) {
-
         return;
-
     }
 
 
     // Swap current file
     // with next file
 
-    const temp =
+    const temporary =
         files[index + 1];
 
 
@@ -792,10 +831,10 @@ function moveFileDown(index) {
 
 
     files[index] =
-        temp;
+        temporary;
 
 
-    // Redraw
+    // Refresh display
 
     renderFiles();
 
@@ -811,25 +850,26 @@ function moveFileDown(index) {
 
 
 // =========================================================
-// REMOVE FILE
+// 20. REMOVE ONE FILE
 // =========================================================
 
 function removeFile(index) {
 
+    // Check index
 
     if (
         index < 0 ||
         index >= files.length
     ) {
-
         return;
-
     }
 
 
-    const removed =
+    const removedFile =
         files[index];
 
+
+    // Remove one file
 
     files.splice(
         index,
@@ -837,13 +877,15 @@ function removeFile(index) {
     );
 
 
+    // Refresh
+
     renderFiles();
 
     updateMergeButton();
 
 
     showStatus(
-        `${removed.name} removed.`,
+        `${removedFile.name} removed.`,
         "success"
     );
 
@@ -851,32 +893,22 @@ function removeFile(index) {
 
 
 // =========================================================
-// REMOVE ALL
+// 21. REMOVE ALL
 // =========================================================
 
 removeAllBtn.addEventListener(
     "click",
     function () {
 
-
-        if (
-            files.length === 0
-        ) {
-
-            showStatus(
-                "No files to remove.",
-                "error"
-            );
-
-            return;
-
-        }
-
+        // Remove all files
 
         files = [];
 
+        // Clear input
+
         fileInput.value = "";
 
+        // Refresh
 
         renderFiles();
 
@@ -893,13 +925,14 @@ removeAllBtn.addEventListener(
 
 
 // =========================================================
-// MERGE BUTTON
+// 22. MERGE BUTTON
 // =========================================================
 
 mergeBtn.addEventListener(
     "click",
     function () {
 
+        // Need at least 2 files
 
         if (
             files.length < 2
@@ -911,9 +944,10 @@ mergeBtn.addEventListener(
             );
 
             return;
-
         }
 
+
+        // PDF
 
         if (
             currentMode === "pdf"
@@ -922,6 +956,9 @@ mergeBtn.addEventListener(
             mergePDF();
 
         }
+
+
+        // Images
 
         else {
 
@@ -934,17 +971,17 @@ mergeBtn.addEventListener(
 
 
 // =========================================================
-// MERGE PDF
+// 23. MERGE PDF
 // =========================================================
 
 async function mergePDF() {
-
 
     setLoading(true);
 
 
     try {
 
+        // Create form data
 
         const formData =
             new FormData();
@@ -952,23 +989,24 @@ async function mergePDF() {
 
         // IMPORTANT:
         //
-        // Add files in EXACT
-        // current array order.
+        // Files are added in their CURRENT order.
         //
         // Example:
         //
-        // files =
-        // [
-        //   C.pdf,
-        //   A.pdf,
-        //   B.pdf
-        // ]
+        // files array:
+        //
+        // B.pdf
+        // C.pdf
+        // A.pdf
         //
         // Backend receives:
         //
+        // B.pdf
         // C.pdf
         // A.pdf
-        // B.pdf
+        //
+        // Therefore Move Up / Down
+        // controls actual merge order.
 
         files.forEach(
             function (file) {
@@ -983,7 +1021,19 @@ async function mergePDF() {
         );
 
 
-        // Send to Render
+        // Helpful debugging
+
+        console.log(
+            "Files being sent:",
+            files.map(
+                function (file) {
+                    return file.name;
+                }
+            )
+        );
+
+
+        // Send request to backend
 
         const response =
             await fetch(
@@ -995,57 +1045,59 @@ async function mergePDF() {
             );
 
 
-        // Check response
+        // Check HTTP response
 
         if (
             !response.ok
         ) {
 
-
-            let message =
+            let errorMessage =
                 "PDF merge failed.";
 
 
             try {
 
-                const data =
+                const errorData =
                     await response.json();
 
 
-                message =
-                    data.detail ||
-                    message;
+                errorMessage =
+                    errorData.detail ||
+                    errorMessage;
 
-            }
+            } catch (error) {
 
-            catch (error) {
-
-                // Ignore JSON error
+                console.error(
+                    "Could not read server error:",
+                    error
+                );
 
             }
 
 
             throw new Error(
-                message
+                errorMessage
             );
 
         }
 
 
-        // Convert response
-        // into PDF Blob
+        // Convert server response
+        // into a PDF Blob
 
         const blob =
             await response.blob();
 
 
-        // Download
+        // Download PDF
 
         downloadFile(
             blob,
             "merged_pdfs.pdf"
         );
 
+
+        // Success
 
         showStatus(
             "✓ PDF merged successfully! Download started.",
@@ -1057,17 +1109,33 @@ async function mergePDF() {
 
     catch (error) {
 
-
         console.error(
             "PDF merge error:",
             error
         );
 
 
-        showStatus(
-            `❌ ${error.message}`,
-            "error"
-        );
+        // Display actual error
+        // instead of hiding it.
+
+        if (
+            error.message ===
+            "Failed to fetch"
+        ) {
+
+            showStatus(
+                "❌ Failed to fetch. Check your Render URL, backend status, and CORS settings.",
+                "error"
+            );
+
+        } else {
+
+            showStatus(
+                `❌ ${error.message}`,
+                "error"
+            );
+
+        }
 
     }
 
@@ -1082,23 +1150,23 @@ async function mergePDF() {
 
 
 // =========================================================
-// MERGE IMAGES
+// 24. MERGE IMAGES
 // =========================================================
 
 async function mergeImages() {
-
 
     setLoading(true);
 
 
     try {
 
+        // Create form data
 
         const formData =
             new FormData();
 
 
-        // Maintain current order
+        // Add images in current order
 
         files.forEach(
             function (file) {
@@ -1113,6 +1181,8 @@ async function mergeImages() {
         );
 
 
+        // Send to backend
+
         const response =
             await fetch(
                 `${API_URL}/merge/images`,
@@ -1123,44 +1193,50 @@ async function mergeImages() {
             );
 
 
+        // Check response
+
         if (
             !response.ok
         ) {
 
-
-            let message =
+            let errorMessage =
                 "Image merge failed.";
 
 
             try {
 
-                const data =
+                const errorData =
                     await response.json();
 
 
-                message =
-                    data.detail ||
-                    message;
+                errorMessage =
+                    errorData.detail ||
+                    errorMessage;
 
-            }
+            } catch (error) {
 
-            catch (error) {
-
-                // Ignore
+                console.error(
+                    "Could not read server error:",
+                    error
+                );
 
             }
 
 
             throw new Error(
-                message
+                errorMessage
             );
 
         }
 
 
+        // Get PDF
+
         const blob =
             await response.blob();
 
+
+        // Download
 
         downloadFile(
             blob,
@@ -1178,17 +1254,30 @@ async function mergeImages() {
 
     catch (error) {
 
-
         console.error(
             "Image merge error:",
             error
         );
 
 
-        showStatus(
-            `❌ ${error.message}`,
-            "error"
-        );
+        if (
+            error.message ===
+            "Failed to fetch"
+        ) {
+
+            showStatus(
+                "❌ Failed to fetch. Check your Render URL, backend status, and CORS settings.",
+                "error"
+            );
+
+        } else {
+
+            showStatus(
+                `❌ ${error.message}`,
+                "error"
+            );
+
+        }
 
     }
 
@@ -1203,7 +1292,7 @@ async function mergeImages() {
 
 
 // =========================================================
-// DOWNLOAD FILE
+// 25. DOWNLOAD FILE
 // =========================================================
 
 function downloadFile(
@@ -1211,12 +1300,15 @@ function downloadFile(
     filename
 ) {
 
+    // Create temporary URL
 
     const url =
         window.URL.createObjectURL(
             blob
         );
 
+
+    // Create download link
 
     const link =
         document.createElement(
@@ -1229,16 +1321,24 @@ function downloadFile(
     link.download = filename;
 
 
+    // Add to page
+
     document.body.appendChild(
         link
     );
 
 
+    // Start download
+
     link.click();
 
 
+    // Remove link
+
     link.remove();
 
+
+    // Release memory
 
     window.URL.revokeObjectURL(
         url
@@ -1248,16 +1348,19 @@ function downloadFile(
 
 
 // =========================================================
-// UPDATE UI
+// 26. UPDATE UI
 // =========================================================
 
 function updateUI() {
 
 
+    // =====================================================
+    // PDF MODE
+    // =====================================================
+
     if (
         currentMode === "pdf"
     ) {
-
 
         pageTitle.textContent =
             "Merge PDF Files";
@@ -1289,8 +1392,11 @@ function updateUI() {
     }
 
 
-    else {
+    // =====================================================
+    // IMAGE MODE
+    // =====================================================
 
+    else {
 
         pageTitle.textContent =
             "Merge Images";
@@ -1305,7 +1411,7 @@ function updateUI() {
 
 
         uploadText.textContent =
-            "or click to select image files";
+            "or click to select images";
 
 
         filesTitle.textContent =
@@ -1322,6 +1428,8 @@ function updateUI() {
     }
 
 
+    // Refresh file list
+
     renderFiles();
 
     updateMergeButton();
@@ -1330,11 +1438,10 @@ function updateUI() {
 
 
 // =========================================================
-// FILE COUNT
+// 27. UPDATE FILE COUNT
 // =========================================================
 
 function updateFileCount() {
-
 
     fileCount.textContent =
         `${files.length} file${
@@ -1347,11 +1454,13 @@ function updateFileCount() {
 
 
 // =========================================================
-// MERGE BUTTON STATE
+// 28. UPDATE MERGE BUTTON
 // =========================================================
 
 function updateMergeButton() {
 
+    // Merge button is enabled
+    // only when there are 2 or more files.
 
     mergeBtn.disabled =
         files.length < 2;
@@ -1360,7 +1469,7 @@ function updateMergeButton() {
 
 
 // =========================================================
-// LOADING
+// 29. LOADING STATE
 // =========================================================
 
 function setLoading(
@@ -1368,8 +1477,9 @@ function setLoading(
 ) {
 
 
-    if (loading) {
-
+    if (
+        loading
+    ) {
 
         mergeBtn.disabled =
             true;
@@ -1378,12 +1488,10 @@ function setLoading(
         mergeBtnText.textContent =
             "Merging...";
 
-
     }
 
 
     else {
-
 
         updateMergeButton();
 
@@ -1410,14 +1518,13 @@ function setLoading(
 
 
 // =========================================================
-// STATUS
+// 30. STATUS MESSAGE
 // =========================================================
 
 function showStatus(
     message,
     type
 ) {
-
 
     statusMessage.textContent =
         message;
@@ -1426,31 +1533,16 @@ function showStatus(
     statusMessage.className =
         `status-message ${type}`;
 
-
-    setTimeout(
-        function () {
-
-            statusMessage.textContent =
-                "";
-
-            statusMessage.className =
-                "status-message";
-
-        },
-        4000
-    );
-
 }
 
 
 // =========================================================
-// FILE SIZE
+// 31. FILE SIZE
 // =========================================================
 
 function formatFileSize(
     bytes
 ) {
-
 
     if (
         bytes === 0
@@ -1476,16 +1568,16 @@ function formatFileSize(
         );
 
 
+    const size =
+        bytes /
+        Math.pow(
+            1024,
+            index
+        );
+
+
     return (
-        parseFloat(
-            (
-                bytes /
-                Math.pow(
-                    1024,
-                    index
-                )
-            ).toFixed(2)
-        )
+        size.toFixed(2)
         +
         " "
         +
@@ -1496,13 +1588,16 @@ function formatFileSize(
 
 
 // =========================================================
-// ESCAPE HTML
+// 32. ESCAPE HTML
+// =========================================================
+//
+// Prevents file names from being
+// interpreted as HTML.
 // =========================================================
 
 function escapeHTML(
     value
 ) {
-
 
     return value
 

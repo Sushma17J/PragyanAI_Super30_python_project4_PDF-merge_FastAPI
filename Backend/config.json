@@ -1,11 +1,11 @@
 {
-    "app_name": "PDF Merger",
+    "app_name": "PragyanAI PDF Merger",
     "version": "1.0.0",
     "description": "PDF and Image Merger using FastAPI, PyPDF and Pillow",
 
     "cors_origins": [
         "*",
-        "https://melodious-cat-b1db76.netlify.app/"
+        "https://pragyanai.com"
     ],
 
     "max_upload_size_mb": 20,

@@ -1,13 +1,3 @@
-"""
-MergeFlow - File Processing Utilities
-
-This file contains all helper functions required for:
-1. Validating uploaded files
-2. Merging PDF files
-3. Converting images into PDF pages
-4. Creating the final merged PDF
-"""
-
 import io
 import os
 
@@ -15,9 +5,9 @@ from PIL import Image
 from pypdf import PdfReader, PdfWriter
 
 
-# ==========================================================
-# ALLOWED FILE EXTENSIONS
-# ==========================================================
+# =========================================================
+# FILE EXTENSIONS
+# =========================================================
 
 PDF_EXTENSIONS = {
     ".pdf"
@@ -30,98 +20,74 @@ IMAGE_EXTENSIONS = {
 }
 
 
-# ==========================================================
-# CHECK PDF FILE
-# ==========================================================
+# =========================================================
+# CHECK PDF
+# =========================================================
 
-def is_pdf(filename):
-    """
-    Returns True if the file is a PDF.
-    """
+def is_pdf(filename: str) -> bool:
 
-    extension = os.path.splitext(
-        filename
-    )[1].lower()
+    extension = os.path.splitext(filename)[1].lower()
 
     return extension in PDF_EXTENSIONS
 
 
-# ==========================================================
-# CHECK IMAGE FILE
-# ==========================================================
+# =========================================================
+# CHECK IMAGE
+# =========================================================
 
-def is_image(filename):
-    """
-    Returns True if the file is an image.
-    """
+def is_image(filename: str) -> bool:
 
-    extension = os.path.splitext(
-        filename
-    )[1].lower()
+    extension = os.path.splitext(filename)[1].lower()
 
     return extension in IMAGE_EXTENSIONS
 
 
-# ==========================================================
+# =========================================================
 # ADD PDF TO WRITER
-# ==========================================================
+# =========================================================
 
 def add_pdf_to_writer(
-    file_data,
-    writer
+    file_data: bytes,
+    writer: PdfWriter
 ):
-    """
-    Reads a PDF from memory and adds
-    all its pages to PdfWriter.
-    """
 
-    pdf_stream = io.BytesIO(
-        file_data
-    )
+    # Convert bytes into a file-like object
+    pdf_stream = io.BytesIO(file_data)
 
-    reader = PdfReader(
-        pdf_stream
-    )
+    # Read PDF
+    reader = PdfReader(pdf_stream)
 
+    # Add every page
     for page in reader.pages:
 
-        writer.add_page(
-            page
-        )
+        writer.add_page(page)
 
 
-# ==========================================================
-# ADD IMAGE TO WRITER
-# ==========================================================
+# =========================================================
+# ADD IMAGE TO PDF
+# =========================================================
 
 def add_image_to_writer(
-    file_data,
-    writer
+    file_data: bytes,
+    writer: PdfWriter
 ):
-    """
-    Converts an image into a PDF page
-    and adds it to PdfWriter.
-    """
 
-    image_stream = io.BytesIO(
-        file_data
-    )
+    # Read image
+    image_stream = io.BytesIO(file_data)
 
-    image = Image.open(
-        image_stream
-    )
+    image = Image.open(image_stream)
 
-    # Convert image to RGB.
-    # This is required for PDF generation.
+    # Convert image to RGB
+    # Required for PDF conversion
     if image.mode != "RGB":
 
-        image = image.convert(
-            "RGB"
-        )
+        image = image.convert("RGB")
 
-    # Create an in-memory PDF
+
+    # Temporary PDF in memory
     pdf_stream = io.BytesIO()
 
+    # Convert image to PDF
     image.save(
         pdf_stream,
         format="PDF"
@@ -129,94 +95,71 @@ def add_image_to_writer(
 
     pdf_stream.seek(0)
 
-    # Read the generated PDF
-    reader = PdfReader(
-        pdf_stream
-    )
 
-    # Add generated page(s)
+    # Read generated PDF
+    reader = PdfReader(pdf_stream)
+
+
+    # Add page to final PDF
     for page in reader.pages:
 
-        writer.add_page(
-            page
-        )
+        writer.add_page(page)
 
 
-# ==========================================================
+# =========================================================
 # MERGE PDF FILES
-# ==========================================================
+# =========================================================
 
-def merge_pdf_files(
-    uploaded_files
-):
-    """
-    Merge only PDF files.
-
-    uploaded_files:
-        [
-            ("file1.pdf", file_data),
-            ("file2.pdf", file_data)
-        ]
-    """
+def merge_pdf_files(uploaded_files):
 
     writer = PdfWriter()
 
-    for filename, file_data in uploaded_files:
 
-        if not is_pdf(filename):
+    # IMPORTANT:
+    # uploaded_files are already in frontend order
 
-            raise ValueError(
-                f"{filename} is not a PDF file."
-            )
+    for file_data in uploaded_files:
 
         add_pdf_to_writer(
             file_data,
             writer
         )
 
+
+    # Create output in memory
     output = io.BytesIO()
 
-    writer.write(
-        output
-    )
+    writer.write(output)
 
     output.seek(0)
 
     return output
 
 
-# ==========================================================
+# =========================================================
 # MERGE IMAGE FILES
-# ==========================================================
+# =========================================================
 
-def merge_image_files(
-    uploaded_files
-):
-    """
-    Convert multiple images into PDF pages
-    and combine them into one PDF.
-    """
+def merge_image_files(uploaded_files):
 
     writer = PdfWriter()
 
-    for filename, file_data in uploaded_files:
 
-        if not is_image(filename):
+    # Images are processed
+    # in the order received
 
-            raise ValueError(
-                f"{filename} is not an image file."
-            )
+    for file_data in uploaded_files:
 
         add_image_to_writer(
             file_data,
             writer
         )
 
+
+    # Create output
     output = io.BytesIO()
 
-    writer.write(
-        output
-    )
+    writer.write(output)
 
     output.seek(0)
 

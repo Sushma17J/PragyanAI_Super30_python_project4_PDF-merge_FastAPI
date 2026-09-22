@@ -39,7 +39,7 @@ with open(
 
 APP_NAME = config.get(
     "app_name",
-    "PragyanAI PDF Merger"
+    "PDF Merger"
 )
 
 VERSION = config.get(

@@ -5,7 +5,7 @@
 
     "cors_origins": [
         "*",
-        "https://pragyanai.com"
+        "https://melodious-cat-b1db76.netlify.app/"
     ],
 
     "max_upload_size_mb": 20,

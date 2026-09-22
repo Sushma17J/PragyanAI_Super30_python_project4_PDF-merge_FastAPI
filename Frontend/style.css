@@ -1,7 +1,3 @@
-/* =====================================================
-   GLOBAL
-===================================================== */
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -10,15 +6,11 @@
 
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, sans-serif;
     background: #f5f7fb;
     color: #1f2937;
 }
 
-
-/* =====================================================
-   APP
-===================================================== */
 
 .app {
     min-height: 100vh;
@@ -33,6 +25,7 @@ body {
 .sidebar {
     width: 250px;
     min-height: 100vh;
+
     position: fixed;
     left: 0;
     top: 0;
@@ -77,14 +70,10 @@ body {
 
 
 .logo span {
-    color: #9ca3af;
     font-size: 12px;
+    color: #9ca3af;
 }
 
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
 
 nav {
     display: flex;
@@ -96,10 +85,6 @@ nav {
 .side-btn {
     width: 100%;
 
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
     padding: 14px;
 
     border: none;
@@ -110,8 +95,13 @@ nav {
 
     cursor: pointer;
 
-    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
     font-size: 15px;
+
+    text-align: left;
 }
 
 
@@ -148,10 +138,6 @@ nav {
 }
 
 
-/* =====================================================
-   HEADER
-===================================================== */
-
 .header {
     margin-bottom: 30px;
 }
@@ -172,11 +158,6 @@ nav {
    UPLOAD
 ===================================================== */
 
-.upload-section {
-    margin-bottom: 20px;
-}
-
-
 .drop-zone {
     padding: 55px 25px;
 
@@ -189,8 +170,6 @@ nav {
     text-align: center;
 
     cursor: pointer;
-
-    transition: 0.2s;
 }
 
 
@@ -239,14 +218,8 @@ nav {
 }
 
 
-.browse-btn:hover {
-    background: #4338ca;
-}
-
-
 .upload-info {
     margin-top: 15px;
-
     font-size: 13px;
 }
 
@@ -278,11 +251,11 @@ nav {
 ===================================================== */
 
 .files-section {
-    padding: 25px;
-
     background: white;
 
     border-radius: 16px;
+
+    padding: 25px;
 }
 
 
@@ -316,11 +289,6 @@ nav {
     color: #dc2626;
 
     cursor: pointer;
-}
-
-
-.remove-all-btn:hover {
-    background: #fee2e2;
 }
 
 
@@ -373,7 +341,6 @@ nav {
 
 .file-details {
     flex: 1;
-
     min-width: 0;
 
     display: flex;
@@ -384,9 +351,7 @@ nav {
 
 .file-details strong {
     overflow: hidden;
-
     text-overflow: ellipsis;
-
     white-space: nowrap;
 }
 
@@ -396,10 +361,6 @@ nav {
     font-size: 13px;
 }
 
-
-/* =====================================================
-   ACTION BUTTONS
-===================================================== */
 
 .file-actions {
     display: flex;
@@ -425,7 +386,6 @@ nav {
 
 .move-btn:hover:not(:disabled) {
     background: #e0e7ff;
-    border-color: #6366f1;
 }
 
 
@@ -459,8 +419,8 @@ nav {
 
 
 .empty-state div {
-    margin-bottom: 10px;
     font-size: 40px;
+    margin-bottom: 10px;
 }
 
 
@@ -513,18 +473,14 @@ nav {
 
     .sidebar {
         position: relative;
-
         width: 100%;
-
         min-height: auto;
     }
 
 
     .main-content {
         width: 100%;
-
         margin-left: 0;
-
         padding: 20px;
     }
 
@@ -547,11 +503,6 @@ nav {
 
     .file-item {
         flex-wrap: wrap;
-    }
-
-
-    .file-actions {
-        margin-left: auto;
     }
 
 }

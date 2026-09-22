@@ -1,9 +1,11 @@
 {
     "app_name": "MergeFlow",
-    "version": "2.0",
+    "version": "3.0",
     "max_files": 20,
-    "allowed_extensions": [
-        ".pdf",
+    "allowed_pdf_extensions": [
+        ".pdf"
+    ],
+    "allowed_image_extensions": [
         ".jpg",
         ".jpeg",
         ".png"

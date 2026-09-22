@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>MergeFlow - PDF & Image Merger</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ======================================================
+     HEADER
+====================================================== -->
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            ✦
+        </div>
+
+        <div class="brand-text">
+
+            <h1>
+                MergeFlow
+            </h1>
+
+            <span>
+                PDF & Image Studio
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <div class="secure-status">
+
+            <span class="status-dot"></span>
+
+            Secure Processing
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- ======================================================
+     MAIN LAYOUT
+====================================================== -->
+
+<div class="layout">
+
+
+    <!-- ==================================================
+         SIDEBAR
+    ================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-section-title">
+            WORKSPACE
+        </div>
+
+
+        <button
+            class="sidebar-item active"
+            id="mergeNav"
+        >
+
+            <span class="sidebar-icon">
+                ▣
+            </span>
+
+            Merge Files
+
+        </button>
+
+
+        <button
+            class="sidebar-item"
+            id="clearWorkspace"
+        >
+
+            <span class="sidebar-icon">
+                ⌫
+            </span>
+
+            Clear Workspace
+
+        </button>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="privacy-card">
+
+                <div class="privacy-icon">
+                    🔒
+                </div>
+
+                <div>
+
+                    <strong>
+                        Private
+                    </strong>
+
+                    <p>
+                        Your files are processed
+                        temporarily.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ==================================================
+         CONTENT
+    ================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <p class="eyebrow">
+                DOCUMENT WORKFLOW
+            </p>
+
+            <h2>
+                Merge files.
+                <br>
+
+                <span>
+                    One clean PDF.
+                </span>
+            </h2>
+
+            <p class="hero-description">
+
+                Combine PDFs and images,
+                arrange them exactly how
+                you want, and download one
+                polished document.
+
+            </p>
+
+        </section>
+
+
+
+        <!-- ==================================================
+             UPLOAD AREA
+        ================================================== -->
+
+        <section
+            class="upload-card"
+            id="uploadCard"
+        >
+
+            <input
+                type="file"
+                id="fileInput"
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png"
+                hidden
+            >
+
+
+            <label
+                for="fileInput"
+                class="upload-area"
+            >
+
+                <div class="upload-icon">
+                    ↑
+                </div>
+
+
+                <h3>
+                    Drop files here
+                </h3>
+
+
+                <p>
+                    or click to browse
+                </p>
+
+
+                <span>
+                    PDF, JPG, JPEG, PNG
+                </span>
+
+            </label>
+
+        </section>
+
+
+
+        <!-- ==================================================
+             FILE TOOLBAR
+        ================================================== -->
+
+        <section class="file-toolbar">
+
+            <div class="file-heading">
+
+                <strong>
+                    Your files
+                </strong>
+
+                <span
+                    class="file-count"
+                    id="fileCount"
+                >
+                    0
+                </span>
+
+            </div>
+
+
+            <div class="toolbar-actions">
+
+                <button
+                    id="moveUp"
+                    class="tool-button"
+                    disabled
+                >
+                    ↑ Move Up
+                </button>
+
+
+                <button
+                    id="moveDown"
+                    class="tool-button"
+                    disabled
+                >
+                    ↓ Move Down
+                </button>
+
+
+                <button
+                    id="removeAll"
+                    class="tool-button danger"
+                    disabled
+                >
+                    Remove All
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==================================================
+             FILE LIST
+        ================================================== -->
+
+        <section
+            class="file-list"
+            id="fileList"
+        >
+
+            <div
+                class="empty-state"
+                id="emptyState"
+            >
+
+                <div class="empty-icon">
+                    📂
+                </div>
+
+                <h3>
+                    No files yet
+                </h3>
+
+                <p>
+                    Upload files to start
+                    building your PDF.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==================================================
+             MERGE BUTTON
+        ================================================== -->
+
+        <button
+            id="mergeButton"
+            class="merge-button"
+            disabled
+        >
+
+            <span>
+                ✦
+            </span>
+
+            Merge & Download PDF
+
+        </button>
+
+
+
+        <!-- ==================================================
+             MESSAGE
+        ================================================== -->
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+
+
+        <!-- ==================================================
+             FOOTER
+        ================================================== -->
+
+        <footer>
+
+            <span>
+                MergeFlow
+            </span>
+
+            <span>
+                PDF & Image Merger
+            </span>
+
+        </footer>
+
+
+    </main>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>

@@ -1,5 +1,4 @@
 import json
-import os
 
 from fastapi import (
     FastAPI,
@@ -13,10 +12,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
 from utils import (
-    merge_pdf_files,
-    merge_image_files,
     is_pdf,
-    is_image
+    is_image,
+    merge_pdf_files,
+    merge_image_files
 )
 
 
@@ -37,35 +36,20 @@ with open(
 # CONFIG VALUES
 # =========================================================
 
-APP_NAME = config.get(
-    "app_name",
-    "PDF Merger"
-)
+APP_NAME = config["app_name"]
 
-VERSION = config.get(
-    "version",
-    "1.0.0"
-)
+VERSION = config["version"]
 
-CORS_ORIGINS = config.get(
-    "cors_origins",
-    ["*"]
-)
+DESCRIPTION = config["description"]
 
-MAX_FILES = config.get(
-    "max_files",
-    20
-)
+CORS_ORIGINS = config["cors_origins"]
 
-MAX_UPLOAD_SIZE_MB = config.get(
-    "max_upload_size_mb",
-    20
-)
+MAX_FILES = config["max_files"]
+
+MAX_UPLOAD_SIZE_MB = config["max_upload_size_mb"]
 
 MAX_UPLOAD_SIZE_BYTES = (
-    MAX_UPLOAD_SIZE_MB
-    * 1024
-    * 1024
+    MAX_UPLOAD_SIZE_MB * 1024 * 1024
 )
 
 
@@ -79,10 +63,7 @@ app = FastAPI(
 
     version=VERSION,
 
-    description=config.get(
-        "description",
-        "PDF Merger"
-    )
+    description=DESCRIPTION
 )
 
 
@@ -101,6 +82,7 @@ app.add_middleware(
     allow_methods=["*"],
 
     allow_headers=["*"]
+
 )
 
 
@@ -109,7 +91,7 @@ app.add_middleware(
 # =========================================================
 
 @app.get("/")
-def home():
+async def home():
 
     return {
 
@@ -130,7 +112,7 @@ def home():
 # =========================================================
 
 @app.get("/health")
-def health():
+async def health():
 
     return {
 
@@ -141,41 +123,18 @@ def health():
 
 
 # =========================================================
-# VALIDATE FILE SIZE
-# =========================================================
-
-def validate_file_size(
-    file_data: bytes,
-    filename: str
-):
-
-    if len(file_data) > MAX_UPLOAD_SIZE_BYTES:
-
-        raise HTTPException(
-
-            status_code=400,
-
-            detail=(
-                f"{filename} exceeds the "
-                f"{MAX_UPLOAD_SIZE_MB} MB limit."
-            )
-
-        )
-
-
-# =========================================================
-# MERGE PDF
+# PDF MERGE
 # =========================================================
 
 @app.post("/merge/pdf")
-async def merge_pdfs(
+async def merge_pdf(
 
     files: list[UploadFile] = File(...)
 
 ):
 
     # -----------------------------------------------------
-    # Check number of files
+    # Minimum files
     # -----------------------------------------------------
 
     if len(files) < 2:
@@ -184,10 +143,15 @@ async def merge_pdfs(
 
             status_code=400,
 
-            detail="Please upload at least 2 PDF files."
+            detail=
+            "Please upload at least 2 PDF files."
 
         )
 
+
+    # -----------------------------------------------------
+    # Maximum files
+    # -----------------------------------------------------
 
     if len(files) > MAX_FILES:
 
@@ -195,10 +159,8 @@ async def merge_pdfs(
 
             status_code=400,
 
-            detail=(
-                f"You can upload maximum "
-                f"{MAX_FILES} files."
-            )
+            detail=
+            f"Maximum {MAX_FILES} files allowed."
 
         )
 
@@ -207,10 +169,13 @@ async def merge_pdfs(
 
 
     # -----------------------------------------------------
-    # Read files in received order
+    # Read files
     # -----------------------------------------------------
 
     for file in files:
+
+
+        # Check filename
 
         if not file.filename:
 
@@ -231,10 +196,8 @@ async def merge_pdfs(
 
                 status_code=400,
 
-                detail=(
-                    f"{file.filename} "
-                    "is not a PDF file."
-                )
+                detail=
+                f"{file.filename} is not a PDF."
 
             )
 
@@ -244,29 +207,36 @@ async def merge_pdfs(
         data = await file.read()
 
 
+        # Check empty
+
         if not data:
 
             raise HTTPException(
 
                 status_code=400,
 
-                detail=(
-                    f"{file.filename} "
-                    "is empty."
-                )
+                detail=
+                f"{file.filename} is empty."
 
             )
 
 
-        # Check size
+        # Check file size
 
-        validate_file_size(
-            data,
-            file.filename
-        )
+        if len(data) > MAX_UPLOAD_SIZE_BYTES:
+
+            raise HTTPException(
+
+                status_code=400,
+
+                detail=
+                f"{file.filename} exceeds "
+                f"{MAX_UPLOAD_SIZE_MB} MB."
+
+            )
 
 
-        # Store in order
+        # Store PDF
 
         pdf_data.append(data)
 
@@ -283,20 +253,23 @@ async def merge_pdfs(
 
     except Exception as error:
 
+        print(
+            "PDF MERGE ERROR:",
+            error
+        )
+
         raise HTTPException(
 
             status_code=500,
 
-            detail=(
-                f"PDF merge failed: "
-                f"{str(error)}"
-            )
+            detail=
+            f"PDF merge failed: {str(error)}"
 
         )
 
 
     # -----------------------------------------------------
-    # Send merged PDF
+    # Return merged PDF
     # -----------------------------------------------------
 
     return StreamingResponse(
@@ -316,7 +289,7 @@ async def merge_pdfs(
 
 
 # =========================================================
-# MERGE IMAGES
+# IMAGE MERGE
 # =========================================================
 
 @app.post("/merge/images")
@@ -326,9 +299,7 @@ async def merge_images(
 
 ):
 
-    # -----------------------------------------------------
-    # Check number of files
-    # -----------------------------------------------------
+    # Minimum files
 
     if len(files) < 2:
 
@@ -336,10 +307,13 @@ async def merge_images(
 
             status_code=400,
 
-            detail="Please upload at least 2 images."
+            detail=
+            "Please upload at least 2 images."
 
         )
 
+
+    # Maximum files
 
     if len(files) > MAX_FILES:
 
@@ -347,10 +321,8 @@ async def merge_images(
 
             status_code=400,
 
-            detail=(
-                f"You can upload maximum "
-                f"{MAX_FILES} files."
-            )
+            detail=
+            f"Maximum {MAX_FILES} files allowed."
 
         )
 
@@ -359,10 +331,11 @@ async def merge_images(
 
 
     # -----------------------------------------------------
-    # Read images in frontend order
+    # Read images
     # -----------------------------------------------------
 
     for file in files:
+
 
         if not file.filename:
 
@@ -375,7 +348,7 @@ async def merge_images(
             )
 
 
-        # Check extension
+        # Check image extension
 
         if not is_image(file.filename):
 
@@ -383,10 +356,8 @@ async def merge_images(
 
                 status_code=400,
 
-                detail=(
-                    f"{file.filename} "
-                    "is not a supported image."
-                )
+                detail=
+                f"{file.filename} is not a supported image."
 
             )
 
@@ -396,26 +367,33 @@ async def merge_images(
         data = await file.read()
 
 
+        # Empty image
+
         if not data:
 
             raise HTTPException(
 
                 status_code=400,
 
-                detail=(
-                    f"{file.filename} "
-                    "is empty."
-                )
+                detail=
+                f"{file.filename} is empty."
 
             )
 
 
-        # Check size
+        # Size check
 
-        validate_file_size(
-            data,
-            file.filename
-        )
+        if len(data) > MAX_UPLOAD_SIZE_BYTES:
+
+            raise HTTPException(
+
+                status_code=400,
+
+                detail=
+                f"{file.filename} exceeds "
+                f"{MAX_UPLOAD_SIZE_MB} MB."
+
+            )
 
 
         image_data.append(data)
@@ -433,20 +411,23 @@ async def merge_images(
 
     except Exception as error:
 
+        print(
+            "IMAGE MERGE ERROR:",
+            error
+        )
+
         raise HTTPException(
 
             status_code=500,
 
-            detail=(
-                f"Image merge failed: "
-                f"{str(error)}"
-            )
+            detail=
+            f"Image merge failed: {str(error)}"
 
         )
 
 
     # -----------------------------------------------------
-    # Download merged PDF
+    # Return PDF
     # -----------------------------------------------------
 
     return StreamingResponse(

@@ -11,7 +11,12 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>MergeFlow - PDF & Image Merger</title>
+    <title>
+        MergeFlow - PDF & Image Studio
+    </title>
+
+
+    <!-- Google Fonts -->
 
     <link
         rel="preconnect"
@@ -28,6 +33,9 @@
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
         rel="stylesheet"
     >
+
+
+    <!-- Main stylesheet -->
 
     <link
         rel="stylesheet"
@@ -52,6 +60,7 @@
             ✦
         </div>
 
+
         <div class="brand-text">
 
             <h1>
@@ -67,15 +76,11 @@
     </div>
 
 
-    <div class="header-right">
+    <div class="secure-status">
 
-        <div class="secure-status">
+        <span class="status-dot"></span>
 
-            <span class="status-dot"></span>
-
-            Secure Processing
-
-        </div>
+        Secure Processing
 
     </div>
 
@@ -84,7 +89,7 @@
 
 
 <!-- ======================================================
-     MAIN LAYOUT
+     PAGE LAYOUT
 ====================================================== -->
 
 <div class="layout">
@@ -96,24 +101,48 @@
 
     <aside class="sidebar">
 
-        <div class="sidebar-section-title">
+        <div class="sidebar-title">
             WORKSPACE
         </div>
 
 
+        <!-- PDF MERGER -->
+
         <button
             class="sidebar-item active"
-            id="mergeNav"
+            id="pdfModeButton"
         >
 
             <span class="sidebar-icon">
                 ▣
             </span>
 
-            Merge Files
+            <span>
+                Merge Files
+            </span>
 
         </button>
 
+
+        <!-- IMAGE MERGER -->
+
+        <button
+            class="sidebar-item"
+            id="imageModeButton"
+        >
+
+            <span class="sidebar-icon">
+                ▧
+            </span>
+
+            <span>
+                Merge Images
+            </span>
+
+        </button>
+
+
+        <!-- CLEAR -->
 
         <button
             class="sidebar-item"
@@ -124,10 +153,14 @@
                 ⌫
             </span>
 
-            Clear Workspace
+            <span>
+                Clear Workspace
+            </span>
 
         </button>
 
+
+        <!-- SIDEBAR INFORMATION -->
 
         <div class="sidebar-bottom">
 
@@ -159,7 +192,7 @@
 
 
     <!-- ==================================================
-         CONTENT
+         MAIN CONTENT
     ================================================== -->
 
     <main class="main-content">
@@ -169,22 +202,44 @@
 
         <section class="hero">
 
-            <p class="eyebrow">
-                DOCUMENT WORKFLOW
+            <div class="hero-badge">
+
+                <span>
+                    ✦
+                </span>
+
+                SIMPLE · FAST · SECURE
+
+            </div>
+
+
+            <p
+                class="eyebrow"
+                id="eyebrow"
+            >
+                PDF WORKFLOW
             </p>
 
-            <h2>
+
+            <h2 id="heroTitle">
+
                 Merge files.
+
                 <br>
 
                 <span>
                     One clean PDF.
                 </span>
+
             </h2>
 
-            <p class="hero-description">
 
-                Combine PDFs and images,
+            <p
+                class="hero-description"
+                id="heroDescription"
+            >
+
+                Combine your PDF files,
                 arrange them exactly how
                 you want, and download one
                 polished document.
@@ -208,7 +263,7 @@
                 type="file"
                 id="fileInput"
                 multiple
-                accept=".pdf,.jpg,.jpeg,.png"
+                accept=".pdf"
                 hidden
             >
 
@@ -223,8 +278,8 @@
                 </div>
 
 
-                <h3>
-                    Drop files here
+                <h3 id="uploadTitle">
+                    Drop PDF files here
                 </h3>
 
 
@@ -233,8 +288,8 @@
                 </p>
 
 
-                <span>
-                    PDF, JPG, JPEG, PNG
+                <span id="uploadFormats">
+                    PDF files only
                 </span>
 
             </label>
@@ -251,9 +306,10 @@
 
             <div class="file-heading">
 
-                <strong>
-                    Your files
+                <strong id="fileHeading">
+                    Your PDF files
                 </strong>
+
 
                 <span
                     class="file-count"
@@ -317,13 +373,15 @@
                     📂
                 </div>
 
-                <h3>
-                    No files yet
+
+                <h3 id="emptyTitle">
+                    No PDF files yet
                 </h3>
 
-                <p>
-                    Upload files to start
-                    building your PDF.
+
+                <p id="emptyDescription">
+                    Upload PDF files to start
+                    building your document.
                 </p>
 
             </div>
@@ -346,14 +404,16 @@
                 ✦
             </span>
 
-            Merge & Download PDF
+            <span id="mergeButtonText">
+                Merge & Download PDF
+            </span>
 
         </button>
 
 
 
         <!-- ==================================================
-             MESSAGE
+             STATUS MESSAGE
         ================================================== -->
 
         <div
@@ -384,6 +444,8 @@
 
 </div>
 
+
+<!-- JavaScript -->
 
 <script src="script.js"></script>
 

@@ -1,5 +1,5 @@
 {
-    "app_name": "PragyanAI PDF Merger",
+    "app_name": "PDF Merger",
     "version": "1.0.0",
     "description": "PDF and Image Merger using FastAPI, PyPDF and Pillow",
 

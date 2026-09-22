@@ -1,3 +1,18 @@
+"""
+MergeFlow - FastAPI Backend
+
+This API provides:
+    /merge/pdf
+        Merge multiple PDF files.
+
+    /merge/images
+        Convert multiple images into
+        one combined PDF.
+
+The frontend is hosted on Netlify
+and this backend is hosted on Render.
+"""
+
 import json
 import os
 
@@ -8,13 +23,19 @@ from fastapi import (
     HTTPException
 )
 
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import (
+    CORSMiddleware
+)
 
-from fastapi.responses import StreamingResponse
+from fastapi.responses import (
+    StreamingResponse
+)
 
 from utils import (
-    merge_files,
-    is_allowed_file
+    merge_pdf_files,
+    merge_image_files,
+    is_pdf,
+    is_image
 )
 
 
@@ -38,7 +59,9 @@ with open(
     encoding="utf-8"
 ) as config_file:
 
-    config = json.load(config_file)
+    config = json.load(
+        config_file
+    )
 
 
 APP_NAME = config.get(
@@ -48,7 +71,7 @@ APP_NAME = config.get(
 
 VERSION = config.get(
     "version",
-    "2.0"
+    "3.0"
 )
 
 MAX_FILES = config.get(
@@ -58,13 +81,18 @@ MAX_FILES = config.get(
 
 
 # ==========================================================
-# FASTAPI APPLICATION
+# CREATE FASTAPI APPLICATION
 # ==========================================================
 
 app = FastAPI(
+
     title=APP_NAME,
-    version=VERSION,
-    description="Modern PDF and Image Merger API"
+
+    description=(
+        "PDF and Image Merger API"
+    ),
+
+    version=VERSION
 )
 
 
@@ -72,7 +100,11 @@ app = FastAPI(
 # CORS
 # ==========================================================
 
+# This allows the Netlify frontend
+# to communicate with the Render backend.
+
 app.add_middleware(
+
     CORSMiddleware,
 
     allow_origins=["*"],
@@ -86,16 +118,22 @@ app.add_middleware(
 
 
 # ==========================================================
-# HOME
+# HOME API
 # ==========================================================
 
 @app.get("/")
 def home():
 
     return {
-        "message": f"{APP_NAME} API is running",
-        "version": VERSION,
-        "status": "online"
+
+        "message":
+            f"{APP_NAME} API is running",
+
+        "version":
+            VERSION,
+
+        "status":
+            "online"
     }
 
 
@@ -107,40 +145,56 @@ def home():
 def health():
 
     return {
-        "status": "healthy"
+
+        "status":
+            "healthy"
     }
 
 
 # ==========================================================
-# MERGE FILES
+# PDF MERGER
 # ==========================================================
 
-@app.post("/merge")
-async def merge_pdf_files(
+@app.post("/merge/pdf")
+async def merge_pdf(
     files: list[UploadFile] = File(...)
 ):
+    """
+    Merge multiple PDF files into
+    one PDF.
+    """
 
     # ------------------------------------------------------
-    # Check files
+    # Check whether files exist
     # ------------------------------------------------------
 
     if not files:
 
         raise HTTPException(
+
             status_code=400,
-            detail="Please upload at least one file."
+
+            detail=(
+                "Please upload at least "
+                "one PDF file."
+            )
         )
 
 
     # ------------------------------------------------------
-    # Maximum file limit
+    # Maximum number of files
     # ------------------------------------------------------
 
     if len(files) > MAX_FILES:
 
         raise HTTPException(
+
             status_code=400,
-            detail=f"Maximum {MAX_FILES} files are allowed."
+
+            detail=(
+                f"Maximum {MAX_FILES} "
+                "files are allowed."
+            )
         )
 
 
@@ -150,52 +204,66 @@ async def merge_pdf_files(
     try:
 
         # --------------------------------------------------
-        # Read every file
+        # Read files in the order received
         # --------------------------------------------------
 
         for uploaded_file in files:
 
-            filename = uploaded_file.filename
+            filename = (
+                uploaded_file.filename
+            )
+
 
             if not filename:
 
                 raise HTTPException(
+
                     status_code=400,
+
                     detail="Invalid file name."
                 )
 
 
             # ----------------------------------------------
-            # Validate extension
+            # Validate PDF
             # ----------------------------------------------
 
-            if not is_allowed_file(filename):
+            if not is_pdf(filename):
 
                 raise HTTPException(
+
                     status_code=400,
+
                     detail=(
-                        f"Unsupported file type: {filename}. "
-                        "Only PDF, JPG, JPEG and PNG are allowed."
+                        f"{filename} is not "
+                        "a PDF file."
                     )
                 )
 
 
             # ----------------------------------------------
-            # Read file data
+            # Read file
             # ----------------------------------------------
 
-            file_data = await uploaded_file.read()
+            file_data = (
+                await uploaded_file.read()
+            )
 
 
             if not file_data:
 
                 raise HTTPException(
+
                     status_code=400,
-                    detail=f"Empty file: {filename}"
+
+                    detail=(
+                        f"{filename} is empty."
+                    )
                 )
 
 
             uploaded_files.append(
+
                 (
                     filename,
                     file_data
@@ -204,10 +272,182 @@ async def merge_pdf_files(
 
 
         # --------------------------------------------------
-        # Merge
+        # Merge PDFs
         # --------------------------------------------------
 
-        output = merge_files(
+        output = merge_pdf_files(
+            uploaded_files
+        )
+
+
+        # --------------------------------------------------
+        # Return PDF
+        # --------------------------------------------------
+
+        return StreamingResponse(
+
+            output,
+
+            media_type="application/pdf",
+
+            headers={
+
+                "Content-Disposition":
+                (
+                    'attachment; '
+                    'filename="merged_pdfs.pdf"'
+                )
+            }
+        )
+
+
+    except HTTPException:
+
+        raise
+
+
+    except Exception as error:
+
+        print(
+            "PDF merge error:",
+            error
+        )
+
+        raise HTTPException(
+
+            status_code=500,
+
+            detail=(
+                "Unable to merge PDF files."
+            )
+        )
+
+
+# ==========================================================
+# IMAGE MERGER
+# ==========================================================
+
+@app.post("/merge/images")
+async def merge_images(
+    files: list[UploadFile] = File(...)
+):
+    """
+    Convert multiple images into
+    one PDF document.
+    """
+
+    # ------------------------------------------------------
+    # Check files
+    # ------------------------------------------------------
+
+    if not files:
+
+        raise HTTPException(
+
+            status_code=400,
+
+            detail=(
+                "Please upload at least "
+                "one image."
+            )
+        )
+
+
+    # ------------------------------------------------------
+    # Maximum files
+    # ------------------------------------------------------
+
+    if len(files) > MAX_FILES:
+
+        raise HTTPException(
+
+            status_code=400,
+
+            detail=(
+                f"Maximum {MAX_FILES} "
+                "images are allowed."
+            )
+        )
+
+
+    uploaded_files = []
+
+
+    try:
+
+        # --------------------------------------------------
+        # Read images
+        # --------------------------------------------------
+
+        for uploaded_file in files:
+
+            filename = (
+                uploaded_file.filename
+            )
+
+
+            if not filename:
+
+                raise HTTPException(
+
+                    status_code=400,
+
+                    detail="Invalid file name."
+                )
+
+
+            # ----------------------------------------------
+            # Validate image
+            # ----------------------------------------------
+
+            if not is_image(filename):
+
+                raise HTTPException(
+
+                    status_code=400,
+
+                    detail=(
+                        f"{filename} is not "
+                        "a supported image."
+                    )
+                )
+
+
+            # ----------------------------------------------
+            # Read image
+            # ----------------------------------------------
+
+            file_data = (
+                await uploaded_file.read()
+            )
+
+
+            if not file_data:
+
+                raise HTTPException(
+
+                    status_code=400,
+
+                    detail=(
+                        f"{filename} is empty."
+                    )
+                )
+
+
+            uploaded_files.append(
+
+                (
+                    filename,
+                    file_data
+                )
+            )
+
+
+        # --------------------------------------------------
+        # Merge images
+        # --------------------------------------------------
+
+        output = merge_image_files(
             uploaded_files
         )
 
@@ -223,24 +463,33 @@ async def merge_pdf_files(
             media_type="application/pdf",
 
             headers={
+
                 "Content-Disposition":
-                'attachment; filename="merged_files.pdf"'
+                (
+                    'attachment; '
+                    'filename="merged_images.pdf"'
+                )
             }
         )
 
 
     except HTTPException:
+
         raise
 
 
     except Exception as error:
 
         print(
-            "Merge error:",
+            "Image merge error:",
             error
         )
 
         raise HTTPException(
+
             status_code=500,
-            detail="Unable to merge the files."
+
+            detail=(
+                "Unable to merge images."
+            )
         )

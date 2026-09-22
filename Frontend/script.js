@@ -18,7 +18,7 @@
 // Do NOT add /merge/pdf here.
 // =========================================================
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://pragyanai-super30-python-project4-pdf.onrender.com";
 
 // After Render deployment, change it to:
 //

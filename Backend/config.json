@@ -9,15 +9,5 @@
     ],
 
     "max_upload_size_mb": 20,
-    "max_files": 20,
-
-    "allowed_pdf_extensions": [
-        ".pdf"
-    ],
-
-    "allowed_image_extensions": [
-        ".jpg",
-        ".jpeg",
-        ".png"
-    ]
+    "max_files": 20
 }

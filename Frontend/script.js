@@ -32,7 +32,7 @@
 // Replace this with your actual Render URL.
 
 const API_URL =
-    "https://YOUR-RENDER-APP.onrender.com";
+    "https://melodious-cat-b1db76.netlify.app/;
 
 
 // ==========================================================
